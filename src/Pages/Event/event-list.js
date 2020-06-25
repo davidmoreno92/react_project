@@ -3,7 +3,11 @@ import React from 'react';
 class EventList extends React.Component {
     render() {
         return (
-            'Página de eventos'
+            <div class="main-wrapper">
+                <div class="container">
+                    Listado de eventos
+                </div>
+            </div>
         )
     }
 }
