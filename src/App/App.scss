@@ -1,9 +1,14 @@
+/* NEW CSS */
 body {
   font-family: Open sans;
-  padding-top: 5rem;
-  background: #f7f7f7 0% 0% no-repeat padding-box;
   opacity: 1;
 }
+
+html, body{min-height:100%;}
+body{height:100vh;}
+
+
+
 
 /* .react-datepicker__input-container input {
 
@@ -49,10 +54,6 @@ input[type="file"] {
   width: 650px;
   line-height: 17px;
   cursor: pointer;
-}
-
-.header {
-  margin-bottom: 2rem;
 }
 
 main > .container {
@@ -180,15 +181,6 @@ a {
   box-shadow: 0px 0px 27px #45316124;
   border-radius: 25px;
   opacity: 1;
-}
-
-.columnaIzq {
-  float: left;
-  margin-left: 60px;
-  margin-top: 40px;
-  color: #201e45;
-  font-family: Montserrat, sans-serif;
-  font-size: 35px;
 }
 
 .fondoblanco {
@@ -355,14 +347,6 @@ a {
     margin-left: 60px;
 }*/
 
-.man {
-  position: absolute;
-  bottom: 214px;
-  right: 200px;
-  width: 300px;
-  clear: left;
-}
-
 .usuarioimg {
   height: 60px;
   margin-bottom: 20px;
@@ -385,31 +369,6 @@ a {
   overflow: hidden;
   margin-top: 50px;
 }
-
-.textbox_wrapper {
-  margin: 0 auto;
-  position: relative;
-}
-
-.textbox {
-  margin: 100px auto 0;
-  width: 50%;
-  color: #000;
-  height: 260px;
-  background-color: rgba(255, 255, 255, 1);
-  box-shadow: 0px 0px 27px #45316124;
-  border-radius: 25px;
-  font-family: Montserrat, sans-serif;
-  font-size: 35px;
-}
-
-.man {
-  position: absolute;
-  bottom: 0px;
-  right: 200px;
-  clear: left;
-}
-
 .panelform {
   margin-top: 50px;
   padding-bottom: 30px;
@@ -870,15 +829,6 @@ td {
   opacity: 1;
   border: 0px;
   text-align: center;
-}
-
-@media (max-width: 1300px) {
-  .man {
-    position: absolute;
-    bottom: 0px;
-    right: 50px;
-    clear: left;
-  }
 }
 
 @media (max-width: 1000px) {

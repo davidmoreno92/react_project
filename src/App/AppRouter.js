@@ -17,11 +17,12 @@ function AppRouter() {
       <Template>
         <Switch>
           <Route path="/" component={Home} exact/>
-          <Route path="/events/detail/:id" component={EventDetail} exact/>
           <Route path="/events" component={EventList} exact/>
+          {/*<Route path="/events/detail/:id" component={EventDetail} exact/>
           <Route path="/events/create" component={EditEvent} exact/>
           <Route path="/events/edit/:id" component={EditEvent} exact/>
           <Route path="*" component={Error404} />
+          */}
         </Switch>
       </Template>
     </BrowserRouter>
