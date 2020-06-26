@@ -4,9 +4,7 @@ import { withAuthenticator } from '@aws-amplify/ui-react';
 
 import Template from "../Components/Template/template";
 import Home from "../Pages/Home/home";
-import EditEvent from "../Pages/Event/event-edit";
 import EventList from "../Pages/Event/event-list";
-import EventDetail from "../Pages/Event/event-detail";
 import Error404 from "../Pages/Error/error";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss'
