@@ -1,0 +1,27 @@
+{
+    "data": 
+    [
+      {
+        "id": "68c839e8-b4f1-457b-99ab-2ae9d0199735",
+        "name": "21 Jack",
+        "image": "21-Jack.jpg",
+        "events": [
+          {"name": "Nombre del evento 1", "date_start": "23/05/2020", "date_finish": "27/08/2020", "status": "Activo"},
+          {"name": "Nombre del evento 3", "date_start": "23/05/2020", "date_finish": "27/08/2020", "status": "Publicado"},
+          {"name": "Nombre del evento 4", "date_start": "23/05/2020", "date_finish": "27/05/2020", "status": "Finalizado"},
+          {"name": "Nombre del evento 4", "date_start": "05/05/2020", "date_finish": "15/05/2020", "status": "Pagado"}
+        ]
+      },
+      {
+        "id": "4b1c9ccb-f75f-42cd-8c29-e722516a0ccc" ,
+        "name": "eGoChase",
+        "image": "eGoChase.jpg",
+        "events": [
+            {"name": "Nombre del evento 1", "date_start": "23/05/2020", "date_finish": "27/08/2020", "status": "Activo"},
+            {"name": "Nombre del evento 3", "date_start": "23/05/2020", "date_finish": "27/08/2020", "status": "Publicado"},
+            {"name": "Nombre del evento 4", "date_start": "23/05/2020", "date_finish": "27/05/2020", "status": "Finalizado"},
+            {"name": "Nombre del evento 4", "date_start": "05/05/2020", "date_finish": "15/05/2020", "status": "Pagado"}
+          ]
+      }
+    ]
+  }

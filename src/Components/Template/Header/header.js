@@ -1,7 +1,6 @@
 import React from "react";
 import { Auth } from "aws-amplify";
 import { NavLink, Link } from 'react-router-dom';
-import logo from "../../../Assets/images/media/logo_admin02.png"
 import './header.scss'
 
 async function signOut() {
@@ -18,7 +17,7 @@ const Header = () => {
     <div className="header">
       <nav className="navbar navbar-expand-md navbar-dark blue">
         <Link to="/">
-          <img className="logoEgo" src={logo} alt="admin logo"/>
+          <img className="logoEgo" src="/media/logo_admin02.png" alt="admin logo"/>
         </Link>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>

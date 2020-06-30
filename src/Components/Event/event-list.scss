@@ -1,0 +1,18 @@
+td, th{
+    padding: 15px;
+}
+
+.action-icons {
+    svg {
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 10px;
+    }
+    .bg-gold {
+        background-color: #d39e00;
+    }
+}
+
+.modal-dialog {
+    max-width: 70% !important;
+}

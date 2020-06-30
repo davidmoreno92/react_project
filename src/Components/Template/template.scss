@@ -3,10 +3,10 @@
 .fill {
   position: absolute;
   top: 75px;
-  bottom: 60px;
+  bottom: 0;
   width: 100%;
 
-  background-image: url('../../Assets/images/media/fondo.png');
+  background-image: url('/media/fondo.png');
   background-position: center;
   background-repeat: no-repeat,no-repeat;
   background-size: cover;

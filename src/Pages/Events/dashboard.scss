@@ -1,0 +1,24 @@
+.main-wrapper {
+    .container {
+        .content-box {
+            background-color: white;
+            box-shadow: 0px 0px 27px #45316124;
+            border-radius: 25px;
+            width: 60%;
+
+            .game-list {
+                padding: 50px;
+                svg {
+                    cursor: pointer;
+                }
+            }
+
+            table td, table th{
+                padding: 15px;
+            }
+        }
+    }
+}
+.modal-dialog {
+    max-width: 70% !important;
+}

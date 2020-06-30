@@ -33,7 +33,24 @@
         }
     }
 }
+/*MEDIA QUERIES*/
+@media (max-width:1025px) {
+    .main-wrapper {
+        .container {
+            .textbox {
+                width: 100% !important;
+                
+                .columnaIzq {
+                    float: none;
+                    margin: 0 auto;
+                    padding-top: 25px;
+                }
+                .man {
+                    display: none;
+                  }    
+            }
+        }
+    }
 
-
-
+}
   
