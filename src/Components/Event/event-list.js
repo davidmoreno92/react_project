@@ -91,19 +91,19 @@ class EventList extends React.Component {
                     ))}
                     {this.state.showModalEdit ?
                         <Modal modalTitle={`Editar evento ${this.state.eventToEdit.name}`} onClose={this.showModalEdit} showModal={this.state.showModalEdit}>
-                            <EventForm eventInfo="asdasdas" isEditable={true}></EventForm>
+                            <EventForm eventInfo={this.state.eventToEdit} isEditable={true}></EventForm>
                         </Modal> : ''}
                     {this.state.showModalSee ?
                         <Modal modalTitle={`Información del evento ${this.state.eventToSee.name}`} onClose={this.showModalSee} showModal={this.state.showModalSee}>
-                            <EventForm eventInfo="asdasdas" isEditable={false}></EventForm>
+                            <EventForm eventInfo={this.state.eventToSee} isEditable={false}></EventForm>
                         </Modal> : ''}
                     {this.state.showModalStatistics ?
                         <Modal modalTitle={`Estadísticas del evento ${this.state.eventToSeeStatistics.name}`} onClose={this.showModalStatistics} showModal={this.state.showModalStatistics}>
-                            <EventStatistics eventInfo="asdasdas"></EventStatistics>
+                            <EventStatistics eventInfo={this.state.eventToSeeStatistics}></EventStatistics>
                         </Modal> : ''}
                     {this.state.showModalCopy ?
                     <Modal modalTitle={`Copia del evento ${this.state.eventToCopy.name}`} onClose={this.showModalCopy} showModal={this.state.showModalCopy}>
-                        <EventForm eventInfo="asdasdas" isCopy={true} isEditable={true}></EventForm>
+                        <EventForm eventInfo={this.state.eventToCopy} isCopy={true} isEditable={true}></EventForm>
                     </Modal> : ''}
             </tbody>
         )

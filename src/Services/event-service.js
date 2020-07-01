@@ -69,6 +69,11 @@ class EventService extends React.Component {
         ]
     }
   }
+
+  setEvent = (event) => {
+
+  }
+
   /*
   const apiName = this.apiName;
   const endPoint = this.endPoint;

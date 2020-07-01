@@ -18,11 +18,6 @@ export default class Modal extends React.Component {
       <ModalBS show={this.state.showModal} onHide={e => {this.onClose(e);}} backdrop="static" keyboard={false}>
         <ModalBS.Header closeButton>{this.props.modalTitle ? this.props.modalTitle : ''}</ModalBS.Header>
         <ModalBS.Body>{this.props.children}</ModalBS.Body>
-        <ModalBS.Footer>
-        <Button variant="secondary" onClick={e => {this.onClose(e);}}>
-            Close
-          </Button>
-        </ModalBS.Footer>
       </ModalBS>
     );
   }

@@ -1,158 +1,73 @@
 import React from 'react';
 import Moment from 'react-moment';
-import randomstring from 'randomstring';
-import { v4 as uuid } from 'uuid';
-import { Link } from 'react-router-dom';
 import { Form, InputGroup, FormControl, Button, ButtonGroup, Table } from 'react-bootstrap';
 import { Eye, Pencil, Trophy } from 'react-bootstrap-icons';
 import './event-list.scss'
 import EventService from "../../Services/event-service";
+import GamesService from "../../Services/games-service";
+import EventModel from '../../Models/Event'
+import Select from 'react-select'
 
 class EventForm extends React.Component {
     constructor(props) {
         super(props);
+        let eventModel = new EventModel();
         this.state = {
-            eventInfo: this.props.eventInfo ? this.props.eventInfo : this.setInitialState()
+            eventInfo: this.props.eventInfo ? this.props.eventInfo : eventModel,
+            changed: false,
+            gamesOptions: [],
+            gamesSelected: []
         };
     }
 
-    setInitialState() {
-        const createEvent = async event => {
-            const tournParams = {
-              id: uuid(),
-              potType: 'R',  //S para torneos en especie y R para torneos normales
-              //topicId:'garcia', //CAMPO TOPIC SOLO PARA BILLIONS 
-              gameId: '75a8899b-c572-445f-bbf9-7b9027ecf7ca', //GAMEID
-              potImg:'',
-              potImgUrl:'monday.jpg', 
-              backgroundImage: '',
-              date: Date.now(),
-              token: randomstring.generate(),
-              start: Date.UTC(2020, 5, 29, 9, 0, 0),
-              end: Date.UTC(2020, 5, 30, 21, 50, 0),
-              feeAmout:0.3,
-              potAmount:5,
-              minFees: Number(Math.ceil(17/1)),
-              title: [
-                {
-                  lang: 'en',
-                  name: 'Monday Funday'
-                }, {
-                  lang: 'es',
-                  name: 'Monday Funday'
-                }
-              ],
-              rewards: [
-               {
-                position: 1,
-                amount:5,
-                currency: 'EUR',
-                type: 'R'
-              }
-                ,
-                {
-                 position: 2,
-                 amount:5,
-                 currency: 'EUR',
-                 type: 'R'
-               }
-            //estructura torneos especie
-                // {
-                //   position: 1,
-                //   amount: 5,
-                //  imgUrl:'0d134801-7018-426f-ae83-df6a522d2c11_reward_0.jpg', 
-                //    imagen del premio
-                //   currency: 'EUR',
-                //       title: [
-                //     {
-                //       lang: 'es',
-                //       name: `RON`
-                //     },
-                //     {
-                //       lang: 'en',
-                //       name: `RON`
-                //     }
-                //   ],
-                //   type: 'S'
-                // }
-              ]
-            };
-              let tourn = {
-              id: tournParams.id,
-              created: Date.now(),
-              updated: Date.now(),
-              //subType: 'daily',  //solo para los dailys
-              curPlayers: 0,
-              date: tournParams.date,
-              token: tournParams.token,
-              //topicId: tournParams.topicId,
-              start: tournParams.start,
-              img: tournParams.backgroundImage,
-              imgUrl: 'monday.jpg', // ----> para cuando se pasen a s3
-              end: tournParams.end,
-              title: tournParams.title,
-              gameId: tournParams.gameId,
-              guaranty: 0,
-              //code:'welcome',  codigo de torneos privados
-              priv: false,
-              live: true, 
-              logo: 2,
-              minFees: tournParams.minFees,
-              rewards: tournParams.rewards,
-              fee: {
-                amount: tournParams.feeAmout,
-                currency: 'EUR',
-                type: 'R'
-              },
-              pot: {
-                amount: tournParams.potAmount,
-                currency: 'EUR',
-                fake: 0,
-                //img:  ---> pot img
-                //imgUrl: tournParams.potImgUrl, // imagen del pot
-                gems: 0,
-                title: [
-                  {
-                    lang: 'es',
-                    name: ' '
-                  }
-                ],
-                type: tournParams.potType
-              },
-              rules: [
-                {
-                  lang: 'es',
-                  name: '¡Alcanza el puesto más alto!\nParticipa tantas veces como quieras para mejorar tu puntuación'
-                },
-                {
-                  lang: 'en',
-                  name: 'Reach the top!\nPlay as many times as you want to improve your score'
-                },
-                {
-                  lang: 'fr',
-                  name: 'Atteins le sommet!\nJoue autant de fois que tu veux pour améliorer ton score'
-                }
-              ],
-              state: 'C',
-              type: 'S',
-              tz: 'Europe/Madrid',
-              url: 'https://www.egogames.com/games.html'
-            };
-        }
-    }
-    componentDidMount() {
-        //isEditable: this.props.isEditable,
+    async componentDidMount() {
+        await (GamesService.getGames()).then( games => {
+            this.setState({gamesOptions: games})
+        });
+
+        console.log(this.state.gamesOptions);
     }
 
+    handleChanges = e => {
+        const { name, value } = e.target;
+        const eventInfo = this.state.eventInfo;
+        eventInfo[name] = value;
+        this.setState({ eventInfo: eventInfo });
+        console.log(this.state.eventInfo);
+    };
+
+    handleChangesAdd = e => {
+        this.setState({ gamesSelected: e });
+    };
+
     render() {
+        
+        console.log(this.state.gamesSelected);
         return (
+             //Check if isEditable or disable all inputs this.props.isEditable
             <div>
-                 {this.props.eventInfo ?
-                <Form>
-                    <InputGroup className="mb-3">
-                        <FormControl value={this.state.eventInfo} placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
+                {this.props.eventInfo ?
+                <fieldset disabled={!this.props.isEditable}>
+                  <Form>
+                    <label htmlFor="potType">Tipo de evento</label>
+                    <InputGroup className="pot-type-group" onChange={this.handleChanges}>
+                        <Form.Check type="radio" name="potType" value="S"/> Especie 
+                        <Form.Check type="radio" name="potType" value="R"/> Dinero
                     </InputGroup>
-                </Form>
+                    <label htmlFor="feeType">Tipo de entrada</label>
+                    <InputGroup className="fee-type-group" onChange={this.handleChanges}>
+                        <Form.Check type="radio" name="feeType" value="S"/> Especie 
+                        <Form.Check type="radio" name="feeType" value="R"/> Dinero
+                    </InputGroup>
+                    <label htmlFor="games">Para qué juegos quieres publicar el evento?</label>
+                    {this.state.gamesOptions ?
+                        <InputGroup className="games-group">
+                            <Select isMulti options={this.state.gamesOptions} name="gamesSelected" onChange={this.handleChangesAdd}/>
+                        </InputGroup>
+                    : ''}
+                  </Form>
+                  
+                </fieldset>
                 :  <div> NO HAY EVENT</div>}
             </div>
         )
