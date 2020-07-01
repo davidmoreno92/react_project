@@ -65,10 +65,9 @@ class EventList extends React.Component {
 
     render() {
         const todayInMillis = new Date().getTime();
-
         return (
             <tbody>
-                {this.state.gameEvents && 
+                {this.state.gameEvents &&
                     this.state.gameEvents.map((event, index) => (
                         <tr key={index}>
                             <td>{event.name}</td>
@@ -80,28 +79,28 @@ class EventList extends React.Component {
                                 </span>
                             </td>
                             <td className="action-icons">
-                                <Eye onClick={e => { this.showModalSee(event); }} className="text-white bg-secondary" size={40}/>
-                                <Stickies onClick={e => { this.showModalCopy(event); }} className="text-white bg-info" size={40}/>
+                                <Eye onClick={e => { this.showModalSee(event); }} className="text-white bg-secondary" size={40} />
+                                <Stickies onClick={e => { this.showModalCopy(event); }} className="text-white bg-info" size={40} />
                                 {event.status !== 'Finalizado' ?
                                     <Pencil onClick={e => { this.showModalEdit(event); }} className="text-white bg-primary" size={40} /> : ''}
                                 {todayInMillis >= event.date_start ?
-                                    <Trophy onClick={e => { this.showModalStatistics(event); }}className="text-white bg-gold" size={40} /> : ''}
+                                    <Trophy onClick={e => { this.showModalStatistics(event); }} className="text-white bg-gold" size={40} /> : ''}
                             </td>
                         </tr>
                     ))}
-                    {this.state.showModalEdit ?
-                        <Modal modalTitle={`Editar evento ${this.state.eventToEdit.name}`} onClose={this.showModalEdit} showModal={this.state.showModalEdit}>
-                            <EventForm eventInfo={this.state.eventToEdit} isEditable={true}></EventForm>
-                        </Modal> : ''}
-                    {this.state.showModalSee ?
-                        <Modal modalTitle={`Información del evento ${this.state.eventToSee.name}`} onClose={this.showModalSee} showModal={this.state.showModalSee}>
-                            <EventForm eventInfo={this.state.eventToSee} isEditable={false}></EventForm>
-                        </Modal> : ''}
-                    {this.state.showModalStatistics ?
-                        <Modal modalTitle={`Estadísticas del evento ${this.state.eventToSeeStatistics.name}`} onClose={this.showModalStatistics} showModal={this.state.showModalStatistics}>
-                            <EventStatistics eventInfo={this.state.eventToSeeStatistics}></EventStatistics>
-                        </Modal> : ''}
-                    {this.state.showModalCopy ?
+                {this.state.showModalEdit ?
+                    <Modal modalTitle={`Editar evento ${this.state.eventToEdit.name}`} onClose={this.showModalEdit} showModal={this.state.showModalEdit}>
+                        <EventForm eventInfo={this.state.eventToEdit} isEditable={true}></EventForm>
+                    </Modal> : ''}
+                {this.state.showModalSee ?
+                    <Modal modalTitle={`Información del evento ${this.state.eventToSee.name}`} onClose={this.showModalSee} showModal={this.state.showModalSee}>
+                        <EventForm eventInfo={this.state.eventToSee} isEditable={false}></EventForm>
+                    </Modal> : ''}
+                {this.state.showModalStatistics ?
+                    <Modal modalTitle={`Estadísticas del evento ${this.state.eventToSeeStatistics.name}`} onClose={this.showModalStatistics} showModal={this.state.showModalStatistics}>
+                        <EventStatistics eventInfo={this.state.eventToSeeStatistics}></EventStatistics>
+                    </Modal> : ''}
+                {this.state.showModalCopy ?
                     <Modal modalTitle={`Copia del evento ${this.state.eventToCopy.name}`} onClose={this.showModalCopy} showModal={this.state.showModalCopy}>
                         <EventForm eventInfo={this.state.eventToCopy} isCopy={true} isEditable={true}></EventForm>
                     </Modal> : ''}

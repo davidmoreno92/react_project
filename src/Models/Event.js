@@ -36,6 +36,7 @@ class EventModel {
       this.type = type;
       this.tz = tz;
       this.url = url;
+      this.isNew = true;
     }
   }
 

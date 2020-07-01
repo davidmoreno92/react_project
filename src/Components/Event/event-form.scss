@@ -1,7 +1,18 @@
 form {
-    .pot-type-group {
-        .form-check:last-child {
-            margin-left: 1rem;
+    .form-group {
+        .form-label {
+            font-weight: bold;
         }
+    }
+    .prize-box {
+        display: flex;
+
+        .mb-3.input-group {
+            flex: 0 0 33.333333%;
+        }
+    }
+
+    .react-datepicker-popper {
+        z-index: 100 !important;
     }
 }
