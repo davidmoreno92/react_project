@@ -13,62 +13,41 @@ class EventService extends React.Component {
     this.endPoint = '/events';
   }
 
-  getParams = async () => {
+  getParams = async (gameId, limit) => {
     return {
       response: true,
       headers: {
         Authorization: await AuthService.getAuthorizationToken()
+      },
+      queryStringParameters: {
+        q: gameId,
+        l: limit
       }
     };
   }
 
-  getEvents = async () => {
-    return {
-      data:
-        [
-          {
-            id: '68c839e8-b4f1-457b-99ab-2ae9d0199735',
-            name: '21 Jack',
-            image: '21jackicon.png',
-            events: [
-              { name: 'Nombre del evento 1', date_start: '1595995200000', date_finish: '1593519462610', status: 'Activo' },
-              { name: 'Nombre del evento 3', date_start: '1593519462610', date_finish: '1593519462610', status: 'Publicado' },
-              { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Finalizado' },
-              { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Pagado' }
-            ]
-          },
-          {
-            id: '4b1c9ccb-f75f-42cd-8c29-e722516a0ccc',
-            name: '2048',
-            image: '2048icon.png',
-            events: [
-              { name: 'Nombre del evento 1', date_start: '1593403200000', date_finish: '1593519462610', status: 'Activo' },
-              { name: 'Nombre del evento 3', date_start: '1593403200000', date_finish: '1593519462610', status: 'Publicado' },
-              { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Finalizado' },
-              { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Pagado' }
-            ]
-          }
-        ]
-    }
+  getEventsByGame = async(gameId, limit) => {
+    return API.get(this.apiName, `${this.endPoint}?q=${gameId}&l=${limit}`)
+      .then(response => {
+        return response;
+      })
+      .catch(error => {
+        console.log(error.response);
+        return {}
+      });
   }
 
+  /* MOCK DATA
   getEventsByGame = async (gameId) => {
     return {
       events:
         [
           { name: 'Nombre del evento 1', date_start: '1593403200000', date_finish: '1593519462610', status: 'Activo' },
           { name: 'Nombre del evento 3', date_start: '1593403200000', date_finish: '1593519462610', status: 'Publicado' },
-          { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Finalizado' },
-          { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Pagado' },
-          { name: 'Nombre del evento 1', date_start: '1593519462610', date_finish: '1593519462610', status: 'Activo' },
-          { name: 'Nombre del evento 3', date_start: '1593519462610', date_finish: '1593519462610', status: 'Publicado' },
-          { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Finalizado' },
-          { name: 'Nombre del evento 1', date_start: '1593519462610', date_finish: '1593519462610', status: 'Activo' },
-          { name: 'Nombre del evento 3', date_start: '1593519462610', date_finish: '1593519462610', status: 'Publicado' },
           { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Finalizado' }
         ]
     }
-  }
+  }*/
 
   setEvent = (event) => {
 

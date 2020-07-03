@@ -34,7 +34,7 @@ const tournParams = {
         position: 2,
         amount:5,
         currency: 'EUR',
-        type: 'R'
+        type: 'R',
       }
   //estructura torneos especie
       // {

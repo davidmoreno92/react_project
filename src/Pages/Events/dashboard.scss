@@ -7,10 +7,16 @@
             width: 60%;
 
             .game-list {
-                padding: 50px;
+                .list-header {
+                    height: 60px;
+                }
+                padding: 2em 3em 3em;
                 svg {
                     cursor: pointer;
                 }
+            }
+            .game-selector {
+                padding: 2em 3em 0em;
             }
 
             table td, table th{

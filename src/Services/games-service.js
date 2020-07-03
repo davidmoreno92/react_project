@@ -16,7 +16,6 @@ class GamesService {
   }
 
   getGames = async() => {
-    let queryParams = await this.getParams();
     return API.get(this.apiName, `${this.endPoint}/list`)
       .then(response => {
         return response;
