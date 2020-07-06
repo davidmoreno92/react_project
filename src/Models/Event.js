@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import randomstring from 'randomstring';
+import RewardModel from './Reward';
 
 class EventModel {
     constructor(id, created, updated, state, date, token, potType, gameId, potImg, subType, topicId, backgroundImage, imgUrl, start, end, fee, pot, minFees, title, code, rules, type, tz, url) {
@@ -30,7 +31,7 @@ class EventModel {
       this.pot = pot;
       this.minFees = minFees;
       this.title = title ? title : [];
-      this.rewards = [];
+      this.rewards = [new RewardModel()];
       this.code = code;
       this.rules = rules;
       this.type = type;

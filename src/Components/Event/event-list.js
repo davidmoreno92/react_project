@@ -70,25 +70,20 @@ class EventList extends React.Component {
                     this.state.gameEvents.map((event, index) => (
                         <tr key={index}>
                             <td>{event.title &&
-                                    event.title.map((eventTitle,  index) => {
-                                        if (eventTitle.lang === 'es')
+                                event.title.map((eventTitle, index) => {
+                                    if (eventTitle.lang === 'es')
                                         return <p key={index}>{eventTitle.name}</p>
-                                    })
-                                }
+                                })
+                            }
                             </td>
                             <td><Moment format="D/MM/YYYY">{parseInt(event.date)}</Moment></td>
                             <td><Moment format="D/MM/YYYY">{parseInt(event.end)}</Moment></td>
                             <td>
-                                <span 
-                                className={`font-weight-bold 
-                                ${event.state === 'C' ? 'text-danger'
-                                : event.state === 'E' ? 'text-success' 
-                                : ''}`}>
-
-                                    {(event.state === 'C' && todayInMillis >= event.date && todayInMillis <= event.end ) ? <span> Activo </span>
-                                    : (event.state === 'C' && todayInMillis < event.date) ? <span> Creado </span>
-                                    : <span> Finalizado </span>
-                                }
+                                <span className={`font-weight-bold ${event.state === 'C' ? 'text-danger' : event.state === 'E' ? 'text-success' : ''}`}>
+                                    {(event.state === 'C' && todayInMillis >= event.date && todayInMillis <= event.end) ? 'Activo'
+                                        : (event.state === 'C' && todayInMillis < event.date) ? 'Creado'
+                                            : 'Finalizado'
+                                    }
                                 </span>
                             </td>
                             <td className="action-icons">

@@ -19,9 +19,6 @@ body{height:100vh;}
   border-radius: 8px;
 }
 
-input[type="file"] {
-  display: none;
-}
 
 .custom-file-upload {
   border: 1px solid #8f8f8f;
@@ -506,14 +503,6 @@ a {
 
 .pointer {
   cursor: pointer !important;
-}
-
-.fotoUpload input[type="file"] {
-  font-size: 100px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
 }
 
 .popover-body {

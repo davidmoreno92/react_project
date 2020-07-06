@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Table, InputGroup} from 'react-bootstrap';
-import { CardList, PlusSquareFill } from 'react-bootstrap-icons';
+import { Form, Table, InputGroup } from 'react-bootstrap';
+import { CardList, PlusSquareFill, Calendar3 } from 'react-bootstrap-icons';
 import Select from 'react-select'
 
 import './dashboard.scss';
@@ -14,12 +14,16 @@ import eventService from '../../Services/event-service';
 class DashBoard extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { gamesSelector: [], gamesSelected: [], gamesWithEvents: [], showModal: false, showModalAdd: false };
+        this.state = { gamesSelector: [], gamesSelected: [], gamesWithEvents: [], showModal: false, showModalAdd: false, gameModalData: {} };
+        this.TEXT_NO_EVENTS = "No existen eventos de este juego";
+        this.MIN_EVENTS_TO_DISPLAY_SEE_MORE = 2;
     }
 
-    toggleModal = e => {
+    toggleModal = (game) => {
+        console.log(game);
         this.setState({
-            showModal: !this.state.showModal
+            showModal: !this.state.showModal,
+            gameModalData: game
         });
     };
 
@@ -30,37 +34,37 @@ class DashBoard extends React.Component {
         });
     };
 
-/*     handleCheckGames = (games) => {
-        let gamesSelected = [...this.state.gamesSelected];
-        let gamesWithEvents =  [...this.state.gamesWithEvents];
-
-        for (let i = 0; i < games.length ; i++) {
-            let game = games[i];
-            if (!gamesSelected.find(g => g.value === game.value)) {
-                game.id = game.value;
-                game.name = game.label;
-                game.events = this.getGameEvents(game.value).then (data => {
-                    gamesSelected.push(game);
-                    gamesWithEvents.push(game);
-                    this.setState({ gamesSelected: gamesSelected, gamesWithEvents: gamesWithEvents });
-                    console.log('gamesSelected THEN', gamesSelected);
-                });
+    /*     handleCheckGames = (games) => {
+            let gamesSelected = [...this.state.gamesSelected];
+            let gamesWithEvents =  [...this.state.gamesWithEvents];
+    
+            for (let i = 0; i < games.length ; i++) {
+                let game = games[i];
+                if (!gamesSelected.find(g => g.value === game.value)) {
+                    game.id = game.value;
+                    game.name = game.label;
+                    game.events = this.getGameEvents(game.value).then (data => {
+                        gamesSelected.push(game);
+                        gamesWithEvents.push(game);
+                        this.setState({ gamesSelected: gamesSelected, gamesWithEvents: gamesWithEvents });
+                        console.log('gamesSelected THEN', gamesSelected);
+                    });
+                }
             }
         }
-    }
- */
+     */
 
     handleCheckGames = (games) => {
         if (games) {
-            this.setState({ gamesSelected: games});
-            let gamesWithEvents =  [...this.state.gamesWithEvents];
-            
-            for (let i = 0; i < games.length ; i++) {
+            this.setState({ gamesSelected: games });
+            let gamesWithEvents = [...this.state.gamesWithEvents];
+
+            for (let i = 0; i < games.length; i++) {
                 let game = games[i];
                 if (!gamesWithEvents.find(g => g.id === game.value)) {
                     game.id = game.value;
                     game.name = game.label;
-                    this.getGameEvents(game.value).then (data => {
+                    this.getGameEvents(game.value).then(data => {
                         game.events = data;
                         gamesWithEvents.push(game);
                         this.setState({ gamesWithEvents: gamesWithEvents });
@@ -69,7 +73,7 @@ class DashBoard extends React.Component {
             }
         }
         else {
-            this.setState({ gamesSelected: []});
+            this.setState({ gamesSelected: [] });
         }
     }
 
@@ -82,16 +86,16 @@ class DashBoard extends React.Component {
 
     async componentDidMount() {
         gamesService.getGames().then(async games => {
-            let gamesSelected= [];
+            let gamesSelected = [];
             let gamesWithEvents = games.filter(g => g.name === '21 Jack' || g.name === 'Solitaire');
 
-            for (let i = 0; i < gamesWithEvents.length ; i++) {
+            for (let i = 0; i < gamesWithEvents.length; i++) {
                 gamesWithEvents[i].events = await this.getGameEvents(gamesWithEvents[i].id);
-                gamesSelected.push({label: gamesWithEvents[i].name, value: gamesWithEvents[i].id});
+                gamesSelected.push({ label: gamesWithEvents[i].name, value: gamesWithEvents[i].id });
             }
-            
+
             let gameOptions = games.map((i) => ({ label: i.name, value: i.id }));
-            this.setState({ gamesSelector: gameOptions, gamesSelected: gamesSelected, gamesWithEvents: gamesWithEvents});
+            this.setState({ gamesSelector: gameOptions, gamesSelected: gamesSelected, gamesWithEvents: gamesWithEvents });
         });
     }
 
@@ -123,7 +127,7 @@ class DashBoard extends React.Component {
     render() {
         let gamesToShow = [];
 
-        this.state.gamesSelected.forEach( game => {
+        this.state.gamesSelected.forEach(game => {
 
             let gameData = this.state.gamesWithEvents.find(g => g.id === game.value);
             if (gameData) {
@@ -134,20 +138,20 @@ class DashBoard extends React.Component {
         const selectStyles = { menu: styles => ({ ...styles, zIndex: 999 }) };
         return (
             <div className="main-wrapper">
-                <div className="container">
+                <div className="container mb-4">
                     <div className="content-box mx-auto mt-4 w-100">
                         <div className="game-list">
                             <div className="list-header">
-                                <CardList  className="float-left"size={37} />
+                                <CardList className="float-left" size={37} />
                                 <h3 className="float-left"><span className="pl-2 align-text-bottom">Lista de eventos</span></h3>
                                 <span className="game-filter float-right">
-                                <Form.Group>
-                                    {this.state.gamesSelector ?
-                                        <InputGroup className="games-group">
-                                             Filtrar <Select required styles={selectStyles} className="w-100" isMulti placeholder="Filtrar" options={this.state.gamesSelector} name="gamesSelected" value={this.state.gamesSelected} onChange={e => { this.handleCheckGames(e); }}/>
-                                        </InputGroup>
-                                    : ''}
-                                </Form.Group>
+                                    <Form.Group>
+                                        {this.state.gamesSelector ?
+                                            <InputGroup className="games-group">
+                                                Filtrar <Select required styles={selectStyles} className="w-100" isMulti placeholder="Filtrar" options={this.state.gamesSelector} name="gamesSelected" value={this.state.gamesSelected} onChange={e => { this.handleCheckGames(e); }} />
+                                            </InputGroup>
+                                            : ''}
+                                    </Form.Group>
                                 </span>
                             </div>
                             {gamesToShow &&
@@ -159,25 +163,25 @@ class DashBoard extends React.Component {
                                                 <PlusSquareFill onClick={e => { this.showModalAdd(game); }} className="text-success float-right" size={32} />
                                             </div>
                                         </h5>
-                                        {/* <div>{JSON.stringify(game)}</div> */}
                                         {game.events && game.events.length > 0 ?
-                                            this.paintTable(<EventList gameEvents={game.events}></EventList>) : 'asdasd'}
+                                            this.paintTable(<EventList gameEvents={game.events}></EventList>) : this.TEXT_NO_EVENTS}
 
-                                        {game.events && game.events.length > 1 ?
-                                            <div className="float-right">
-                                                <button onClick={e => { this.toggleModal(); }}>
-                                                    Ver más eventos 
-                                                </button>
+                                        {game.events && game.events.length > this.MIN_EVENTS_TO_DISPLAY_SEE_MORE ?
+                                            <div className="mx-auto text-center">
+                                                <a href="#" className="text-dark" onClick={e => { this.toggleModal(game); }}>
+                                                    Ver más +
+                                                </a>
                                             </div> : ''}
-
-                                            <Modal modalTitle={`Eventos de ${game.name}`} onClose={e => { this.toggleModal(); }} showModal={this.state.showModal}>
-                                                {this.paintTable(<EventList gameId={game.id} gameEvents={game.events}></EventList>)}
-                                            </Modal>
                                     </div>
-                            ))}
+                                ))}
                             {this.state.showModalAdd ?
                                 <Modal modalTitle={`Añadir un nuevo evento para ${this.state.game.name}`} onClose={this.showModalAdd} showModal={this.state.showModalAdd}>
                                     <EventForm isEditable={true}></EventForm>
+                                </Modal> : ''}
+
+                            {this.state.showModal && this.state.gameModalData ?
+                                <Modal modalTitle={`Eventos de ${this.state.gameModalData.name}`} onClose={e => { this.toggleModal(); }} showModal={this.state.showModal}>
+                                    {this.paintTable(<EventList gameId={this.state.gameModalData.id} gameEvents={this.state.gameModalData.events}></EventList>)}
                                 </Modal> : ''}
                         </div>
                     </div>
