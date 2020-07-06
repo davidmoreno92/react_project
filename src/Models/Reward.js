@@ -6,7 +6,7 @@ class RewardModel {
         this.fileObject = {};
         this.title = title ? title : [];
         this.currency = currency ? currency : "";
-        this.type = type ? type : "";
+        this.type = type ? type : "R";
     }
 }
 

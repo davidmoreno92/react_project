@@ -4,31 +4,31 @@ form {
             font-weight: bold;
         }
     }
+
+    
+    #rewardImg, #rewardGlobalImg, #rewardPotImg {
+        color:transparent;
+    }
+    
+    .uploadLabel {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+        max-width: 150px;
+    }
+
+
     .prize-box {
         display: flex;
 
         .mb-3.input-group {
-            flex: 0 0 30%;
+            flex: 0 0 33%;
             padding: 0 1em;
-            max-width: 30%;
 
-            .uploadLabel {
-                width: 100%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                margin: 0;
-
-                span {
-                    background-color: #e9ecef;
-                    border: 1px solid #ced4da !important;
-                    width: 100%;
-                    display: block;
-                    text-align: center;
-                    height: 38px;
-                    line-height: 38px;
-                    cursor: pointer;
-                }
+            .reward-currency {
+                max-height: 38px;
             }
         }
         .delete-button {

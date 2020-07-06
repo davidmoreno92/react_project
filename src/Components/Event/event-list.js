@@ -90,7 +90,6 @@ class EventList extends React.Component {
                                 <Eye onClick={e => { this.showModalSee(event); }} className="text-white bg-secondary" size={40} />
                                 <Stickies onClick={e => { this.showModalCopy(event); }} className="text-white bg-info" size={40} />
 
-
                                 {event.state !== 'E' ?
                                     <Pencil onClick={e => { this.showModalEdit(event); }} className="text-white bg-primary" size={40} /> : ''}
                                 {todayInMillis >= event.date ?
@@ -101,19 +100,19 @@ class EventList extends React.Component {
                 {this.state.showModalEdit ?
                     <Modal modalTitle={`Editar evento ${this.state.eventToEdit.title[0].name}`} onClose={this.showModalEdit} showModal={this.state.showModalEdit}>
                         <EventForm eventInfo={this.state.eventToEdit} isEditable={true}></EventForm>
-                    </Modal> : ''}
+                    </Modal> : undefined}
                 {this.state.showModalSee ?
                     <Modal modalTitle={`Información del evento ${this.state.eventToSee.title[0].name}`} onClose={this.showModalSee} showModal={this.state.showModalSee}>
                         <EventForm eventInfo={this.state.eventToSee} isEditable={false}></EventForm>
-                    </Modal> : ''}
+                    </Modal> : undefined}
                 {this.state.showModalStatistics ?
                     <Modal modalTitle={`Estadísticas del evento ${this.state.eventToSeeStatistics.title[0].name}`} onClose={this.showModalStatistics} showModal={this.state.showModalStatistics}>
                         <EventStatistics eventInfo={this.state.eventToSeeStatistics}></EventStatistics>
-                    </Modal> : ''}
+                    </Modal> : undefined}
                 {this.state.showModalCopy ?
                     <Modal modalTitle={`Copia del evento ${this.state.eventToCopy.title[0].name}`} onClose={this.showModalCopy} showModal={this.state.showModalCopy}>
                         <EventForm eventInfo={this.state.eventToCopy} isCopy={true} isEditable={true}></EventForm>
-                    </Modal> : ''}
+                    </Modal> : undefined}
             </tbody>
         )
     }

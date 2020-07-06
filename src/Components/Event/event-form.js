@@ -18,10 +18,12 @@ class EventForm extends React.Component {
     constructor(props) {
         super(props);
         let eventModel = new EventModel();
+        this.form = React.createRef();
         this.state = {
             eventInfo: this.props.eventInfo ? this.props.eventInfo : eventModel,
             gamesOptions: [],
-            gamesSelected: []
+            gamesSelected: [],
+            error: false
         };
         registerLocale("es", es);
     }
@@ -41,8 +43,9 @@ class EventForm extends React.Component {
         eventInfoForm.feeCurrency = this.state.eventInfo.fee ? this.state.eventInfo.fee.curency : '';
         eventInfoForm.gameId = this.state.eventInfo.gameId;
         eventInfoForm.id = this.state.eventInfo.id;
-        eventInfoForm.imgUrl = this.state.eventInfo.imgUrl;
-        eventInfoForm.minFees = this.state.eventInfo.minFees;
+        eventInfoForm.imgUrl = this.state.eventInfo.imgUrl ? this.state.eventInfo.imgUrl : '';
+        eventInfoForm.potImg = this.state.eventInfo.pot ? this.state.eventInfo.pot.potImg : '';
+        eventInfoForm.minFees = this.state.eventInfo.minFees ? this.state.eventInfo.minFees : '';
         eventInfoForm.potAmount = this.state.eventInfo.pot ? this.state.eventInfo.pot.amount : '';
         eventInfoForm.potType = this.state.eventInfo.pot ? this.state.eventInfo.pot.type : '';
         eventInfoForm.titleEs = this.state.eventInfo.title.length ? this.state.eventInfo.title[0].name : '';
@@ -51,6 +54,9 @@ class EventForm extends React.Component {
         eventInfoForm.rulesEs = this.state.eventInfo.rules ? this.state.eventInfo.rules[0] : '';
         eventInfoForm.rulesEn = this.state.eventInfo.rules ? this.state.eventInfo.rules[1] : '';
         eventInfoForm.type = this.state.eventInfo.type;
+        eventInfoForm.topicId = this.state.eventInfo.topicId ? this.state.eventInfo.topicId : '';
+        eventInfoForm.code = this.state.eventInfo.code ? this.state.eventInfo.code : '';
+        eventInfoForm.isNew = this.state.eventInfo.isNew ? this.state.eventInfo.isNew : false;
 
         this.setState({ eventInfoLocal: eventInfoForm })
     }
@@ -61,6 +67,18 @@ class EventForm extends React.Component {
         eventInfo[name] = value;
         this.setState({ eventInfo: eventInfo });
     };
+
+    handleImagesGlobal = e => {
+        let newData = this.state.eventInfoLocal;
+        const { name } = e.target;
+        
+        if (e.target.files && e.target.files.length) {
+            newData[name] = e.target.files[0];
+        }
+
+        this.setState({eventInfoLocal: newData}); 
+    };
+
 
     handleChangesDate = (target, date) => {
         const eventInfo = this.state.eventInfo;
@@ -73,6 +91,7 @@ class EventForm extends React.Component {
     };
 
     handleChangesRewards = (i, e) => {
+        e.preventDefault();
         let newData = this.state.eventInfoLocal;
         const { name, value } = e.target;
         
@@ -103,6 +122,72 @@ class EventForm extends React.Component {
         this.setState({eventInfoLocal: newData});
     };
 
+    createEvent = (e) => {
+        try {
+            this.form.current.reportValidity();
+        } catch (error) {
+            this.setState({ error });
+        }
+
+        if (!this.state.error) {
+/*             gamesSelected.forEach( game => {
+
+            }) */
+
+            let eventToSend = {
+                id: this.state.eventInfoLocal.id,
+                potType: this.state.eventInfoLocal.potType,
+                topicId: this.state.eventInfoLocal.topicId,
+                gameId: this.state.eventInfoLocal.gameId,
+                potImgUrl: this.state.eventInfoLocal.potImg,
+                backgroundImageUrl: this.state.eventInfoLocal.imgUrl,
+                date: this.state.eventInfoLocal.date,
+                token: this.state.eventInfoLocal.token,
+                start: this.state.eventInfoLocal.start,
+                end: this.state.eventInfoLocal.end,
+                feeAmount: this.state.eventInfoLocal.feeAmount,
+                potAmount: this.state.eventInfoLocal.potAmount,
+                minFees: this.state.eventInfoLocal.minFees,
+                title: [ 
+                    {lang: 'en', name: this.state.eventInfoLocal.titleEn},
+                    {lang: 'es', name: this.state.eventInfoLocal.titleEs}
+                ],
+                rewards: this.state.eventInfoLocal.rewards,
+                state: 'C',
+                type: this.state.eventInfoLocal.type,
+                subType: this.state.eventInfoLocal.subType
+                }
+
+                console.log(eventToSend);
+
+            }
+        //Componer el objeto a enviar
+        /*      eventInfoForm.created = this.state.eventInfo.created;
+        eventInfoForm.date = this.state.eventInfo.date;
+        eventInfoForm.end = this.state.eventInfo.end;
+        eventInfoForm.feeAmount = this.state.eventInfo.fee ? this.state.eventInfo.fee.amount : '';
+        eventInfoForm.feeType = this.state.eventInfo.fee ? this.state.eventInfo.fee.type : '';
+        eventInfoForm.feeCurrency = this.state.eventInfo.fee ? this.state.eventInfo.fee.curency : '';
+        eventInfoForm.gameId = this.state.eventInfo.gameId;
+        eventInfoForm.id = this.state.eventInfo.id;
+        eventInfoForm.imgUrl = this.state.eventInfo.imgUrl ? this.state.eventInfo.imgUrl : '';
+        eventInfoForm.potImg = this.state.eventInfo.pot ? this.state.eventInfo.pot.potImg : '';
+        eventInfoForm.minFees = this.state.eventInfo.minFees ? this.state.eventInfo.minFees : '';
+        eventInfoForm.potAmount = this.state.eventInfo.pot ? this.state.eventInfo.pot.amount : '';
+        eventInfoForm.potType = this.state.eventInfo.pot ? this.state.eventInfo.pot.type : '';
+        eventInfoForm.titleEs = this.state.eventInfo.title.length ? this.state.eventInfo.title[0].name : '';
+        eventInfoForm.titleEn = this.state.eventInfo.title.length ? this.state.eventInfo.title[1].name : '';
+        eventInfoForm.rewards = this.state.eventInfo.rewards;
+        eventInfoForm.rulesEs = this.state.eventInfo.rules ? this.state.eventInfo.rules[0] : '';
+        eventInfoForm.rulesEn = this.state.eventInfo.rules ? this.state.eventInfo.rules[1] : '';
+        eventInfoForm.type = this.state.eventInfo.type;
+        eventInfoForm.topicId = this.state.eventInfo.topicId ? this.state.eventInfo.topicId : '';
+        eventInfoForm.code = this.state.eventInfo.code ? this.state.eventInfo.code : '';
+        eventInfoForm.isNew = this.state.eventInfo.isNew ? this.state.eventInfo.isNew : false; */
+        //Llamar al servicio y confirmar
+        
+    }
+
     render() {
         console.log(this.state.eventInfoLocal);
         const selectStyles = { menu: styles => ({ ...styles, zIndex: 999 }) };
@@ -110,9 +195,8 @@ class EventForm extends React.Component {
             <div className="px-5 py-3">
                 <fieldset disabled={!this.props.isEditable}>
                     {this.state.eventInfoLocal ?
-                        <Form>
-
-                            <div className="left w-50 pr-4 float-left">
+                        <Form ref={this.form}>
+                            <div className="left col-12 col-lg-6 pr-4 float-left">
                                 <Form.Group>
                                     <Form.Label>Tipo de evento *</Form.Label>
                                     <InputGroup required className="pot-type-group">
@@ -131,7 +215,8 @@ class EventForm extends React.Component {
                                     </Form.Group>
                                     : ''}
                                 <Form.Group>
-                                    <Form.Label>Nombre del evento (ES / EN) *</Form.Label>
+                                    <Form.Label className="w-50">Nombre del evento (ES)</Form.Label>
+                                    <Form.Label className="w-50 pl-2">Nombre del evento (EN)</Form.Label>
                                     <InputGroup className="mb-3">
                                         <FormControl required value={this.state.eventInfoLocal.titleEs} name="titleEs" placeholder="Nombre del evento en Español" onChange={this.handleChanges} />
                                         <FormControl className="ml-3" required value={this.state.eventInfoLocal.titleEn} name="titleEn" placeholder="Event's name in English" onChange={this.handleChanges} />
@@ -140,11 +225,11 @@ class EventForm extends React.Component {
                                 <Form.Group>
                                     <Form.Label>Fecha inicio / Fecha fin *</Form.Label>
                                     <InputGroup className="mb-3">
-                                        <DatePicker required styles={selectStyles} className="form-control" placeholderText="Click para seleccionar fecha" name="date" onChange={this.handleChangesDate.bind(this, "date")}
+                                        <DatePicker required styles={selectStyles} className="form-control" name="date" onChange={this.handleChangesDate.bind(this, "date")}
                                             value={moment(this.state.eventInfoLocal.date, 'x').toDate()} selected={moment(this.state.eventInfoLocal.date, 'x').toDate()} showTimeSelect locale="es" withPortallocale="es" timeFormat="HH:mm" timeIntervals={15}
                                             timeCaption="time" dateFormat="Pp" />
 
-                                        <DatePicker required className="form-control ml-3" placeholderText="Click para seleccionar fecha" name="end" onChange={this.handleChangesDate.bind(this, "end")}
+                                        <DatePicker required className="form-control ml-3" name="end" onChange={this.handleChangesDate.bind(this, "end")}
                                             value={moment(this.state.eventInfoLocal.end, 'x').toDate()} selected={moment(this.state.eventInfoLocal.end, 'x').toDate()} showTimeSelect locale="es" withPortallocale="es" timeFormat="HH:mm" timeIntervals={15}
                                             timeCaption="time" dateFormat="Pp" />
                                     </InputGroup>
@@ -155,14 +240,58 @@ class EventForm extends React.Component {
                                 <Form.Group>
                                     <Form.Label>Bote *</Form.Label>
                                     <InputGroup className="mb-3">
-                                        <FormControl required value={this.state.eventInfoLocal.potAmount} name="potAmount" onChange={this.handleChanges} />
+                                        <FormControl type="number" required value={this.state.eventInfoLocal.potAmount} name="potAmount" onChange={this.handleChanges} />
                                     </InputGroup>
                                     {!!(this.state.eventInfoLocal.minFees) && !!(this.state.eventInfoLocal.feeAmount) ?
                                         <p className="text-danger mt-2">Bote mínimo: {this.state.eventInfoLocal.minFees * this.state.eventInfoLocal.feeAmount}</p>
                                         : ''}
                                 </Form.Group>
+                                <Form.Group>
+                                    <Form.Label className="w-50">Topic ID</Form.Label>
+                                    <Form.Label className="w-50 pl-2">Código de evento</Form.Label>
+                                    <InputGroup className="mb-3">
+                                        <FormControl value={this.state.eventInfoLocal.topicId} placerholder="Introduce el topic ID" name="topicId" onChange={this.handleChanges}/>
+                                        <FormControl className="ml-3" value={this.state.eventInfoLocal.code} placerholder="Introduce el código del evento" name="code" onChange={this.handleChanges} />
+                                    </InputGroup>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Imágenes asociadas *</Form.Label>
+                                    <Form.Group className="px-3">
+                                        <Form.Label className="w-50">Reward</Form.Label>
+                                        <Form.Label className="w-50 pl-2">Pot</Form.Label>
+                                        <InputGroup className="mb-3">
+                                            <div className="w-50 p-2">
+                                                { this.state.eventInfoLocal.imgUrl ? 
+                                                    <img className="w-100 pb-2" src={`/media/${this.state.eventInfoLocal.imgUrl}`} ></img>
+                                                    : ''
+                                                }
+                                                <FormControl id="rewardGlobalImg" accept="image/jpg, image/jpeg, image/png" type="file" required name="imgUrl" onChange={this.handleImagesGlobal}/>
+                                                <span className="uploadLabel">{this.state.eventInfoLocal.imgUrl}</span>
+                                            </div>
+                                            <div className="w-50 p-2">
+                                            { this.state.eventInfoLocal.potImg ? 
+                                                    <img className="w-100 pb-2" src={`/media/${this.state.eventInfoLocal.potImg}`} ></img>
+                                                    : ''
+                                                }
+                                                <FormControl id="rewardPotImg" accept="image/jpg, image/jpeg, image/png" type="file" required name="potImg" onChange={this.handleImagesGlobal}/>
+                                                <span className="uploadLabel">{this.state.eventInfoLocal.potImg}</span>
+                                            </div>
+                                        </InputGroup>
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <div className="w-100 p-2">
+                                            <Form.Label className="w-50 pl-2">Banner</Form.Label>
+                                            { this.state.eventInfoLocal.imgUrl ? 
+                                                <img className="w-100 pb-2" src={`/media/${this.state.eventInfoLocal.imgUrl}`} ></img>
+                                                : ''
+                                            }
+                                            <FormControl id="rewardPotImg" accept="image/jpg, image/jpeg, image/png" type="file" required name="bannerImg" onChange={this.handleImagesGlobal}/>
+                                            <span className="uploadLabel">{this.state.eventInfoLocal.potImg}</span>
+                                        </div>
+                                    </Form.Group>
+                                </Form.Group>
                             </div>
-                            <div className="right w-50 pl-4 float-left">
+                            <div className="right col-12 col-lg-6 pl-4 float-left">
                                 <Form.Group>
                                     <Form.Label>Tipo de entrada *</Form.Label>
                                     <InputGroup required className="pot-type-group">
@@ -202,7 +331,7 @@ class EventForm extends React.Component {
                                             <Form.Check className="ml-3" type="radio" name="prizeType" value="S" /> Especie
                                     </InputGroup>
                                     </Form.Group>
-                                    { this.state.eventInfoLocal.rewards ?
+                                    { this.state.eventInfoLocal.rewards && this.state.eventInfoLocal.rewards.length ?
                                         this.state.eventInfoLocal.rewards.map( (event, i) => {
                                         return (
                                         <Form.Group key={i} className="prize-box">
@@ -214,7 +343,7 @@ class EventForm extends React.Component {
                                                 <Form.Label className="w-100">Premio</Form.Label>
                                                 <FormControl type={this.state.eventInfoLocal.rewards[i].type === 'S' ? 'text' : 'number'} required value={this.state.eventInfoLocal.rewards[i].amount} name="amount"  onChange={this.handleChangesRewards.bind(this, i)}/>
                                                 <InputGroup.Append>
-                                                    <InputGroup.Text>
+                                                    <InputGroup.Text className="reward-currency">
                                                         {this.state.eventInfoLocal.rewards[i].type === 'R' ?
                                                             <span>€</span> : this.state.eventInfoLocal.rewards[i].type === 'F' ? <span>GG</span> : <span><Gift></Gift></span>}
                                                     </InputGroup.Text>
@@ -222,10 +351,8 @@ class EventForm extends React.Component {
                                             </InputGroup>
                                             <InputGroup className="mb-3">
                                                 <Form.Label className="w-100">Imagen</Form.Label>
-                                                <FormControl id="rewardImg" hidden accept="image/*" type="file" placerholder="Subir imagen" required name="imgUrl" onChange={this.handleChangesRewards.bind(this, i)}/>
-                                                <label className="uploadLabel" htmlFor="rewardImg">
-                                                    {this.state.eventInfoLocal.rewards[i].imgUrl ? this.state.eventInfoLocal.rewards[i].imgUrl : <span>Examinar</span>}
-                                                </label>
+                                                <FormControl id="rewardImg" accept="image/jpg, image/jpeg, image/png" type="file" placerholder="Subir imagen" required name="imgUrl" onChange={this.handleChangesRewards.bind(this, i)}/>
+                                                <span className="uploadLabel">{this.state.eventInfoLocal.rewards[i].imgUrl ? this.state.eventInfoLocal.rewards[i].imgUrl : ''}</span>
                                             </InputGroup>
                                             <span className="delete-button pl-3">
                                                 <Trash size={25} onClick={this.removeReward.bind(this, i)} />
@@ -236,7 +363,14 @@ class EventForm extends React.Component {
                                     }
                                     <button className="btn btn-primary margender bold" onClick={this.addReward}> AÑADIR PREMIO <Plus size="28"></Plus></button>
                                 </Form.Group>
+                               
                             </div>
+                            { this.props.isEditable && !this.state.eventInfoLocal.isNew ?
+                                <button className="btn btn-info" type='button' onClick={(e) => this.updateEvent(e)}> Editar evento </button>
+                                : this.state.eventInfoLocal.isNew ? 
+                                <button className="btn btn-primary" type='button' onClick={(e) => this.createEvent(e)}> Crear evento</button>
+                                : ''
+                            }
                         </Form>
                         : ''}
                 </fieldset>
