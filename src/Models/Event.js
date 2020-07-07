@@ -3,7 +3,7 @@ import randomstring from 'randomstring';
 import RewardModel from './Reward';
 
 class EventModel {
-    constructor(id, created, updated, state, date, token, potType, gameId, potImg, subType, topicId, backgroundImage, imgUrl, start, end, fee, pot, minFees, title, code, rules, type, tz, url) {
+    constructor(id, created, updated, dateShowable, state, date, token, potType, gameId, potImg, bannerImg, subType, topicId, backgroundImage, imgUrl, start, end, fee, pot, minFees, title, code, rules, type, tz, url) {
       this._curPlayers = 0;
       this._guaranty = 0;
       this._priv = false;
@@ -17,16 +17,20 @@ class EventModel {
       this.token = token ? token : randomstring.generate();
       this.created = created ? created : Date.now();
       this.updated = updated ? updated : Date.now();
+      this.start = start ? start : Date.now();
+      this.end = end ? end : Date.now();
+      this.dateShowable = dateShowable ? dateShowable : '';
       this.id = id ? id : uuid();
       this.potType = potType;
       this.gameId = gameId;
-      this.potImg = potImg;
       this.subType = subType;
       this.topicId = topicId;
       this.backgroundImage = backgroundImage;
-      this.imgUrl = imgUrl;
-      this.start = start;
-      this.end = end ? end : Date.now();
+      this.files = {};
+      //Delete IMGS outside files
+      this.imgUrl = imgUrl ? imgUrl : '';
+      this.potImg = potImg ? potImg : '';
+      this.bannerImg = bannerImg ? bannerImg : ''; 
       this.fee = fee;
       this.pot = pot;
       this.minFees = minFees;

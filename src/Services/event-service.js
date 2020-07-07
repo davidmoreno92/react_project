@@ -3,7 +3,7 @@ import AuthService from './auth-service'
 import { API } from 'aws-amplify';
 import GamesService from './games-service';
 
-class EventService extends React.Component {
+class EventsService extends React.Component {
 
   constructor(props) {
     super(props);
@@ -11,69 +11,54 @@ class EventService extends React.Component {
     this.state = { games: [], events: [] };
     this.apiName = 'adminAPI';
     this.endPoint = '/events';
+    this.createEndPoint = '/tourns/create';
   }
 
-  getParams = async (gameId, limit) => {
+  getParams = async () => {
     return {
       response: true,
       headers: {
         Authorization: await AuthService.getAuthorizationToken()
       },
-      queryStringParameters: {
-        q: gameId,
-        l: limit
-      }
+      body: {}
     };
   }
 
-  getEventsByGame = async(gameId, limit) => {
+  getEventsByGame = async (gameId, limit) => {
     return API.get(this.apiName, `${this.endPoint}?q=${gameId}&l=${limit}`)
       .then(response => {
         return response;
       })
       .catch(error => {
         console.log(error.response);
-        return {}
+        return error;
       });
   }
 
-  /* MOCK DATA
-  getEventsByGame = async (gameId) => {
-    return {
-      events:
-        [
-          { name: 'Nombre del evento 1', date_start: '1593403200000', date_finish: '1593519462610', status: 'Activo' },
-          { name: 'Nombre del evento 3', date_start: '1593403200000', date_finish: '1593519462610', status: 'Publicado' },
-          { name: 'Nombre del evento 4', date_start: '1593519462610', date_finish: '1593519462610', status: 'Finalizado' }
-        ]
-    }
-  }*/
+  createEvent = async (event) => {
+    let params = await this.getParams();
+    params.body = event;
 
-  setEvent = (event) => {
-
+    return API.post(this.apiName, this.createEndPoint, params)
+      .then(response => {
+        return response;
+      })
+      .catch(error => {
+        console.log(error.response);
+        return error;
+      });
   }
 
-  /*
-  const apiName = this.apiName;
-  const endPoint = this.endPoint;
-  let queryParams = await this.getParams();
-  let games = await (await this.gameService.getGames()).json;
-  
-  await (this.gameService.getGames()).then( games => {
-    if (games) {
-      games.map(function (game) {
-        API.get(apiName, endPoint+'?q=68c839e8-b4f1-457b-99ab-2ae9d0199735')
-          .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error.response);
-          return {}
-        });
-      });
-    }
-  });
-  */
+  updateEvent = async (event) => {
+/*     return API.put(this.apiName, this.endPoint, event)
+      .then(response => {
+        return response;
+      })
+      .catch(error => {
+        console.log(error.response);
+        return error;
+      }); */
+  }
 }
 
-export default new EventService();
+export default new EventsService();

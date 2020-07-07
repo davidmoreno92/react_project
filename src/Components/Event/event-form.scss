@@ -3,13 +3,12 @@ form {
         .form-label {
             font-weight: bold;
         }
-    }
+            
+        #rewardImg, #rewardGlobalImg, #rewardPotImg, #rewardBannerImg {
+            color:transparent;
+        }
 
-    
-    #rewardImg, #rewardGlobalImg, #rewardPotImg {
-        color:transparent;
-    }
-    
+        
     .uploadLabel {
         width: 100%;
         white-space: nowrap;
@@ -19,6 +18,14 @@ form {
         max-width: 150px;
     }
 
+    svg {
+        cursor: pointer;
+    }
+
+    .prizes-header {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 1rem;
+    }
 
     .prize-box {
         display: flex;
@@ -27,20 +34,30 @@ form {
             flex: 0 0 33%;
             padding: 0 1em;
 
+            &:first-child {
+                padding-left: 0;
+            }
+
             .reward-currency {
                 max-height: 38px;
             }
         }
         .delete-button {
             line-height: 70px;
-
-            svg {
-                cursor: pointer;
-            }
+            color: red;
         }
     }
 
     .react-datepicker-popper {
         z-index: 100 !important;
+        width: 400px;
     }
+    }
+
+    .images-box {
+        .images-border {
+            border: 1px dashed #6ac6db;
+        }
+    }
+
 }
