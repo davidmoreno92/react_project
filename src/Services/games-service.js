@@ -1,4 +1,3 @@
-import React from 'react';
 import AuthService from './auth-service'
 import { API } from 'aws-amplify';
 

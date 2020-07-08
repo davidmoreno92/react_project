@@ -1,15 +1,14 @@
 import React from 'react';
-import Moment from 'react-moment';
 import moment from 'moment';
 import DatePicker, { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 import Select from 'react-select'
 
 import "react-datepicker/dist/react-datepicker.css";
-import { Form, InputGroup, FormControl, Button, ButtonGroup, Table } from 'react-bootstrap';
+import { Form, InputGroup, FormControl, Button } from 'react-bootstrap';
 import { Gift, X, PlusSquareFill } from 'react-bootstrap-icons';
 import './event-form.scss'
-import EventsService from "../../Services/event-service";
+import EventsService, { IMAGES_TOURS_BUCKET} from "../../Services/event-service";
 import GamesService from "../../Services/games-service";
 import EventModel from '../../Models/Event';
 import RewardModel from '../../Models/Reward';
@@ -41,7 +40,7 @@ class EventForm extends React.Component {
         eventInfoForm.updated = this.state.eventInfo.updated ? this.state.eventInfo.updated : Date.now();
         eventInfoForm.start = this.state.eventInfo.start ? this.state.eventInfo.start : Date.now();
         eventInfoForm.end = this.state.eventInfo.end ? this.state.eventInfo.end : Date.now();
-        eventInfoForm.dateShowable = this.state.eventInfo.dateShowable ? this.state.eventInfo.dateShowable : Date.now()
+        eventInfoForm.dateShowable = this.state.eventInfo.dateShowable ? this.state.eventInfo.dateShowable : eventInfoForm.start;
         eventInfoForm.subType = this.state.eventInfo.subType ? this.state.eventInfo.subType : '';
         eventInfoForm.token = this.state.eventInfo.token;
         eventInfoForm.topicId = this.state.eventInfo.topicId ? this.state.eventInfo.topicId : '';
@@ -54,13 +53,13 @@ class EventForm extends React.Component {
         eventInfoForm.minFees = this.state.eventInfo.minFees ? this.state.eventInfo.minFees : '';
         eventInfoForm.rewards = this.state.eventInfo.rewards ? this.state.eventInfo.rewards : [];
         eventInfoForm.fee = this.state.eventInfo.fee ? this.state.eventInfo.fee : {};
-        eventInfoForm.pot = this.state.eventInfo.pot ? this.state.eventInfo.pot : {}; 
-/*         eventInfoForm.fee.amount = this.state.eventInfo.fee.amount ? this.state.eventInfo.fee.amount : '';
-        eventInfoForm.fee.type = this.state.eventInfo.fee.type ? this.state.eventInfo.fee.type : '';
-        eventInfoForm.fee.currency = this.state.eventInfo.fee.curency ? this.state.eventInfo.fee.curency : '';
-        eventInfoForm.pot.amount = this.state.eventInfo.pot.amount ? this.state.eventInfo.pot.amount : '';
-        eventInfoForm.pot.currency = this.state.eventInfo.pot.currency ? this.state.eventInfo.pot.currency : '';
-        eventInfoForm.pot.type = this.state.eventInfoForm.pot.type ? this.state.eventInfoForm.pot.type : '';  */
+        eventInfoForm.pot = this.state.eventInfo.pot ? this.state.eventInfo.pot : {};
+        /*         eventInfoForm.fee.amount = this.state.eventInfo.fee.amount ? this.state.eventInfo.fee.amount : '';
+                eventInfoForm.fee.type = this.state.eventInfo.fee.type ? this.state.eventInfo.fee.type : '';
+                eventInfoForm.fee.currency = this.state.eventInfo.fee.curency ? this.state.eventInfo.fee.curency : '';
+                eventInfoForm.pot.amount = this.state.eventInfo.pot.amount ? this.state.eventInfo.pot.amount : '';
+                eventInfoForm.pot.currency = this.state.eventInfo.pot.currency ? this.state.eventInfo.pot.currency : '';
+                eventInfoForm.pot.type = this.state.eventInfoForm.pot.type ? this.state.eventInfoForm.pot.type : '';  */
         //TODO: Implement files in API
         eventInfoForm.files = this.state.eventInfo.files ? this.state.eventInfo.files : {};
         eventInfoForm.files.rewardImg = {};
@@ -146,48 +145,60 @@ class EventForm extends React.Component {
     };
 
     createEvent = (e) => {
-        /*Validación 
         try {
             this.form.current.reportValidity();
-        } catch (error) {
-            this.setState({ error });
-        }
+            this.state.gamesSelected.forEach(game => {
+                let gameId = game.value;
+                let eventToAdd = { ...this.state.eventInfoLocal };
 
-        if (!this.state.error) {
-
-        } */
-        this.state.gamesSelected.forEach(game => {
-            let gameId = game.value;
-            let eventToAdd = { ...this.state.eventInfoLocal };
-
-            if (eventToAdd) {
-                eventToAdd.gameId = gameId;
-                eventToAdd.start = parseInt(eventToAdd.start);
-                eventToAdd.end = parseInt(eventToAdd.end);
-                eventToAdd.dateShowable = parseInt(eventToAdd.dateShowable);
-                eventToAdd.minFees = parseInt(eventToAdd.minFees);
-                eventToAdd.fee.amount = eventToAdd.fee.type !== 'free' ? parseInt(eventToAdd.fee.amount) : 0;
-                eventToAdd.pot.amount = parseInt(eventToAdd.pot.amount);
-                eventToAdd.pot.currency = eventToAdd.pot.type === 'R' ? '€' : 'GG';
-                eventToAdd.fee.currency = eventToAdd.fee.type === 'R' ? '€' : eventToAdd.fee.type === 'R' && eventToAdd.fee.amount === 0 ? '€' : 'GG'
-                eventToAdd.rewards.forEach( reward => {
-                    parseInt(reward.amount);
-                    parseInt(reward.position);
-                }); 
-
-                console.log('Evento a añadir', eventToAdd);
-                EventsService.createEvent(eventToAdd)
-                    .then((response) => {
-                        this.setState({ createResponse: response.data, createSubmitted: true });
-                        console.log(response.data);
-                    })
-                    .catch((e) => {
-                        this.setState({ createResponse: e, createSubmitted: true });
-                        console.log(e);
+                var formData = new FormData();
+                
+                if (eventToAdd) {
+                    eventToAdd.fee.amount = eventToAdd.fee.type !== 'free' ? parseInt(eventToAdd.fee.amount) : 0;
+                    eventToAdd.pot.amount = parseInt(eventToAdd.pot.amount);
+                    eventToAdd.pot.type = 'R'; //Siempre es R por que no se utiliza este tipo para nada
+                    eventToAdd.pot.currency = eventToAdd.pot.type === 'R' ? 'EUR' : 'GG';
+                    eventToAdd.fee.currency = eventToAdd.fee.type === 'R' ? 'EUR' : eventToAdd.fee.type === 'R' && eventToAdd.fee.amount === 0 ? 'EUR' : 'GG'
+                    eventToAdd.rewards.forEach(reward => {
+                        parseInt(reward.amount);
+                        parseInt(reward.position);
+                        reward.currency = reward.type === 'R' ? 'EUR' : 'GG'
                     });
-            }
-        });
 
+                    const fileReader = new FileReader();
+                    fileReader.readAsText(this.selectedFile, "UTF-8");
+                    fileReader.onload = () => {
+                        eventToAdd.files.bannerImg = JSON.parse(eventToAdd.files.bannerImg);
+                        eventToAdd.files.potImg = JSON.parse(eventToAdd.files.potImg);
+                        eventToAdd.files.rewardImg = JSON.parse(eventToAdd.files.rewardImg);
+                        formData.append('files', eventToAdd.files);
+                    }
+
+                    formData.append('gameId', gameId);
+                    formData.append('start', parseInt(eventToAdd.start));
+                    formData.append('end', parseInt(eventToAdd.end));
+                    formData.append('dateShowable', parseInt(eventToAdd.dateShowable));
+                    formData.append('minFees', parseInt(eventToAdd.minFees));
+                    formData.append('minFees', parseInt(eventToAdd.minFees));
+                    formData.append('fee', eventToAdd.fee);
+                    formData.append('pot', eventToAdd.pot);
+                    formData.append('rewards', eventToAdd.rewards);
+
+                    console.log('Evento a añadir', eventToAdd);
+                    EventsService.createEvent(eventToAdd)
+                        .then((response) => {
+                            this.setState({ createResponse: response.data, createSubmitted: true });
+                            console.log(response.data);
+                        })
+                        .catch((e) => {
+                            this.setState({ createResponse: e, createSubmitted: true });
+                            console.log(e);
+                        });
+                }
+            });
+        } catch (err) {
+            this.setState({ error: err });
+        }
     }
 
     render() {
@@ -195,17 +206,15 @@ class EventForm extends React.Component {
         const selectStyles = { menu: styles => ({ ...styles, zIndex: 999 }) };
         return (
             <div className="px-lg-5 py-3">
+                {this.state.error ?
+                    <div class="text-danger col-12">
+                        Se ha producido un error en el envio del formulario.
+                    </div>
+                    : undefined}
                 <fieldset disabled={!this.props.isEditable}>
                     {this.state.eventInfoLocal ?
                         <Form ref={this.form}>
                             <div className="left col-12 col-lg-6 pr-4 float-left">
-                                <Form.Group>
-                                    <Form.Label>Tipo de evento *</Form.Label>
-                                    <InputGroup required className="pot-type-group">
-                                        <Form.Check type="radio" checked={this.state.eventInfoLocal.pot.type === "S"} name="pot" value="S" onChange={this.handleChanges.bind(this, 'type')} /> Especie
-                                        <Form.Check type="radio" className="ml-3" checked={this.state.eventInfoLocal.pot.type === "R"} name="pot" value="R" onChange={this.handleChanges.bind(this, 'type')} /> Dinero
-                                </InputGroup>
-                                </Form.Group>
                                 {!this.state.eventInfo.gameId ?
                                     <Form.Group>
                                         <Form.Label>¿Para qué juegos quieres publicar el evento? *</Form.Label>
@@ -231,27 +240,32 @@ class EventForm extends React.Component {
                                     </Form.Group>
                                 </div>
                                 <div className="row">
+                                    {!(this.state.eventInfoLocal.dateShowable <= this.state.eventInfoLocal.start) ?
+                                        <div class="text-danger col-12">
+                                            La fecha de visualización debe ser igual o inferior a la fecha de inicio.
+                                        </div>
+                                        : undefined}
                                     <Form.Group className="col-12 col-lg-4">
-                                    <Form.Label>Fecha inicio *</Form.Label>
+                                        <Form.Label>Fecha inicio *</Form.Label>
                                         <InputGroup className="mb-3">
-                                        <DatePicker className="col-4 col-lg-12" required styles={selectStyles} className="form-control" name="start" onChange={this.handleChangesDate.bind(this, "start")}
+                                            <DatePicker className="col-4 col-lg-12" required styles={selectStyles} className="form-control" name="start" onChange={this.handleChangesDate.bind(this, "start")}
                                                 value={moment(this.state.eventInfoLocal.start, 'x').toDate()} selected={moment(this.state.eventInfoLocal.start, 'x').toDate()} showTimeSelect locale="es" withPortallocale="es" timeFormat="HH:mm" timeIntervals={15}
                                                 timeCaption="time" dateFormat="Pp" />
                                         </InputGroup>
                                     </Form.Group>
                                     <Form.Group className="col-12 col-lg-4">
-                                    <Form.Label>Fecha fin *</Form.Label>
+                                        <Form.Label>Fecha fin *</Form.Label>
                                         <InputGroup className="mb-3">
-                                        <DatePicker className="col-4 col-lg-12" required className="form-control" name="end" onChange={this.handleChangesDate.bind(this, "end")}
+                                            <DatePicker className="col-4 col-lg-12" required className="form-control" name="end" onChange={this.handleChangesDate.bind(this, "end")}
                                                 value={moment(this.state.eventInfoLocal.end, 'x').toDate()} selected={moment(this.state.eventInfoLocal.end, 'x').toDate()} showTimeSelect locale="es" withPortallocale="es" timeFormat="HH:mm" timeIntervals={15}
                                                 timeCaption="time" dateFormat="Pp" />
                                         </InputGroup>
                                     </Form.Group>
                                     <Form.Group className="col-12 col-lg-4">
-                                    <Form.Label>Fecha visualización </Form.Label>
+                                        <Form.Label>Fecha visualización </Form.Label>
                                         <InputGroup className="mb-3">
-                                        <DatePicker className="col-4 col-lg-12" required styles={selectStyles} className="form-control" name="dateShowable" onChange={this.handleChangesDate.bind(this, "dateShowable")}
-                                                value={moment(this.state.eventInfoLocal.dateShowable, 'x').toDate() || null } selected={moment(this.state.eventInfoLocal.dateShowable, 'x').toDate() || null} showTimeSelect locale="es" withPortallocale="es" timeFormat="HH:mm" timeIntervals={15}
+                                            <DatePicker className="col-4 col-lg-12" required styles={selectStyles} className="form-control" name="dateShowable" onChange={this.handleChangesDate.bind(this, "dateShowable")}
+                                                value={moment(this.state.eventInfoLocal.dateShowable, 'x').toDate() || null} selected={moment(this.state.eventInfoLocal.dateShowable, 'x').toDate() || null} showTimeSelect locale="es" withPortallocale="es" timeFormat="HH:mm" timeIntervals={15}
                                                 timeCaption="time" dateFormat="Pp" />
                                         </InputGroup>
                                     </Form.Group>
@@ -268,13 +282,14 @@ class EventForm extends React.Component {
                                     <Form.Group className="col-12 col-lg-4">
                                         <Form.Label>Topic ID</Form.Label>
                                         <InputGroup className="mb-3">
-                                        <FormControl value={this.state.eventInfoLocal.topicId} placerholder="Introduce el topic ID" name="topicId" onChange={this.handleChanges.bind(this, null)} />
+                                            <FormControl value={this.state.eventInfoLocal.topicId} placerholder="Introduce el topic ID" name="topicId" onChange={this.handleChanges.bind(this, null)} />
                                         </InputGroup>
                                     </Form.Group>
                                     <Form.Group className="col-12 col-lg-4">
                                         <Form.Label>Código de evento</Form.Label>
                                         <InputGroup className="mb-3">
-                                        <FormControl value={this.state.eventInfoLocal.code} placerholder="Introduce el código del evento" name="code" onChange={this.handleChanges.bind(this, null)} />
+                                            <FormControl value={this.state.eventInfoLocal.code} placerholder="Introduce el código del evento" name="code" onChange={this.handleChanges.bind(this, null)} />
+                                            <Button className="ml-1">Validar</Button>
                                         </InputGroup>
                                     </Form.Group>
                                 </div>
@@ -286,14 +301,13 @@ class EventForm extends React.Component {
                                         <Form.Label>Reward</Form.Label>
                                         <InputGroup className="mb-3 images-border">
                                             <div className="col-12 p-2">
-                                                {/*Doesn't exists pot IMG yet*/}
-                                                {this.state.eventInfoLocal.files.rewardImg && this.state.eventInfoLocal.files.rewardImg.name && this.state.eventInfoLocal.isNew ?
-                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.rewardImg)}></img>
-                                                    : this.state.eventInfoLocal.rewardImg ?
-                                                        <img className="pb-2 mw-100" src={this.state.eventInfoLocal.rewardImg} />
+                                                {this.state.eventInfoLocal.files.rewardImg && this.state.eventInfoLocal.files.rewardImg.name ?
+                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.rewardImg)} alt="reward"></img>
+                                                    : this.state.eventInfoLocal.reward && this.state.eventInfoLocal.reward.imgUrl ?
+                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET+'/'+this.state.eventInfoLocal.reward.imgUrl} alt="reward"/>
                                                         : ''
                                                 }
-                                                <FormControl id="rewardGlobalImg" accept="image/jpg, image/jpeg, image/png" type="file" required name="rewardImg" onChange={this.handleImagesGlobal} />
+                                                <FormControl id="rewardGlobalImg" accept="image/jpg, image/jpeg, image/png" type="file" name="rewardImg" onChange={this.handleImagesGlobal} />
                                                 <span className="uploadLabel">{this.state.eventInfoLocal.files.rewardImg.name}</span>
                                             </div>
                                         </InputGroup>
@@ -302,13 +316,14 @@ class EventForm extends React.Component {
                                         <Form.Label className="pl-lg-2">Pot</Form.Label>
                                         <InputGroup className="images-border">
                                             <div className="p-2">
-                                                {this.state.eventInfoLocal.files.potImg && this.state.eventInfoLocal.files.potImg.name && this.state.eventInfoLocal.isNew ?
-                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.potImg)}></img>
-                                                    : this.state.eventInfoLocal.potImg ?
-                                                        <img className="pb-2 mw-100" src={this.state.eventInfoLocal.potImg} />
+                                                {this.state.eventInfoLocal.files.potImg && this.state.eventInfoLocal.files.potImg.name ?
+                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.potImg)} alt="pot"></img>
+                                                    : this.state.eventInfoLocal.pot && this.state.eventInfoLocal.pot.imgUrl ?
+                                                    //Route to s3 in SRC
+                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET+'/'+this.state.eventInfoLocal.pot.imgUrl} alt="pot"/>
                                                         : ''
                                                 }
-                                                <FormControl id="rewardPotImg" accept="image/jpg, image/jpeg, image/png" type="file" required name="potImg" onChange={this.handleImagesGlobal} />
+                                                <FormControl id="rewardPotImg" accept="image/jpg, image/jpeg, image/png" type="file" name="potImg" onChange={this.handleImagesGlobal} />
                                                 <span className="uploadLabel">{this.state.eventInfoLocal.potImg}</span>
                                             </div>
                                         </InputGroup>
@@ -317,13 +332,14 @@ class EventForm extends React.Component {
                                         <Form.Label>Banner</Form.Label>
                                         <InputGroup className="images-border">
                                             <div className="p-2">
-                                                {this.state.eventInfoLocal.files.bannerImg && this.state.eventInfoLocal.files.bannerImg.name && this.state.eventInfoLocal.isNew ?
-                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.bannerImg)}></img>
-                                                    : this.state.eventInfoLocal.bannerImg ?
-                                                        <img className="pb-2 mw-100" src={this.state.eventInfoLocal.bannerImg} />
+                                                {this.state.eventInfoLocal.files.bannerImg.name}
+                                                {this.state.eventInfoLocal.files.bannerImg && this.state.eventInfoLocal.files.bannerImg.name ?
+                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.bannerImg)} alt="banner"></img>
+                                                    : this.state.eventInfoLocal.imgUrl ?
+                                                        <img className="pb-2 mw-100"src={IMAGES_TOURS_BUCKET+'/'+this.state.eventInfoLocal.imgUrl} alt="banner"/>
                                                         : ''
                                                 }
-                                                <FormControl id="rewardBannerImg" accept="image/jpg, image/jpeg, image/png" type="file" required name="bannerImg" onChange={this.handleImagesGlobal} />
+                                                <FormControl id="rewardBannerImg" accept="image/jpg, image/jpeg, image/png" type="file" name="bannerImg" onChange={this.handleImagesGlobal} />
                                                 <span className="uploadLabel">{this.state.eventInfoLocal.files.bannerImg.name}</span>
                                             </div>
                                         </InputGroup>
@@ -391,7 +407,7 @@ class EventForm extends React.Component {
                                                     </InputGroup>
                                                     <InputGroup className="mb-3">
                                                         <Form.Label className="w-100">Imagen</Form.Label>
-                                                        <FormControl id="rewardImg" accept="image/jpg, image/jpeg, image/png" type="file" placerholder="Subir imagen" required name="imgUrl" onChange={this.handleChangesRewards.bind(this, i)} />
+                                                        <FormControl id="rewardImg" accept="image/jpg, image/jpeg, image/png" type="file" placerholder="Subir imagen" name="imgUrl" onChange={this.handleChangesRewards.bind(this, i)} />
                                                         <span className="uploadLabel">{this.state.eventInfoLocal.rewards[i].imgUrl ? this.state.eventInfoLocal.rewards[i].imgUrl : ''}</span>
                                                     </InputGroup>
                                                     <span className="delete-button pl-3">

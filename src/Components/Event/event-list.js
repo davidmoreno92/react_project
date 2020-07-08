@@ -76,15 +76,21 @@ class EventList extends React.Component {
                                 })
                             }
                             </td>
-                            <td><Moment format="D/MM/YYYY">{parseInt(event.date)}</Moment></td>
-                            <td><Moment format="D/MM/YYYY">{parseInt(event.end)}</Moment></td>
+                            <td><Moment format="DD/MM/YYYY hh:mm:ss">{parseInt(event.start)}</Moment></td>
+                            <td><Moment format="DD/MM/YYYY hh:mm:ss">{parseInt(event.end)}</Moment></td>               
                             <td>
-                                <span className={`font-weight-bold ${event.state === 'C' ? 'text-danger' : event.state === 'E' ? 'text-success' : ''}`}>
-                                    {(event.state === 'C' && todayInMillis >= event.date && todayInMillis <= event.end) ? 'Activo'
-                                        : (event.state === 'C' && todayInMillis < event.date) ? 'Creado'
-                                            : 'Finalizado'
-                                    }
-                                </span>
+                                {event.start >= todayInMillis && todayInMillis <= event.end ?
+                                    !event.dateShowable ?
+                                        <span className="font-weight-bold text-info"> Activo </span>
+                                        : event.dateShowable >= todayInMillis ?
+                                            <span className="font-weight-bold text-primary"> Visible </span>
+                                            : event.dateShowable < todayInMillis ?
+                                            <span className="font-weight-bold text-warning"> Oculto </span>
+                                    : undefined
+                                : todayInMillis >= event.end && event.result !== 'P' ? 
+                                    <span className="font-weight-bold text-danger"> Finalizado </span>
+                                    : <span className="font-weight-bold text-success"> Pagado </span>
+                                }
                             </td>
                             <td className="action-icons">
                                 <Eye onClick={e => { this.showModalSee(event); }} className="text-white bg-secondary" size={40} />

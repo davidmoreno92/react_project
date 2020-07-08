@@ -1,6 +1,4 @@
 import React from 'react';
-import { Form, Button, ButtonGroup, Table } from 'react-bootstrap';
-import { Trophy } from 'react-bootstrap-icons';
 import './event-statistics.scss'
 
 class EventStatistics extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Table, InputGroup } from 'react-bootstrap';
-import { CardList, PlusSquareFill, Calendar3 } from 'react-bootstrap-icons';
+import { CardList, PlusSquareFill } from 'react-bootstrap-icons';
 import Select from 'react-select'
 
 import './dashboard.scss';

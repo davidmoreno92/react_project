@@ -19,7 +19,7 @@ class EventModel {
       this.updated = updated ? updated : Date.now();
       this.start = start ? start : Date.now();
       this.end = end ? end : Date.now();
-      this.dateShowable = dateShowable ? dateShowable : '';
+      this.dateShowable = dateShowable ? dateShowable : this.start;
       this.id = id ? id : uuid();
       this.potType = potType;
       this.gameId = gameId;
@@ -31,8 +31,8 @@ class EventModel {
       this.imgUrl = imgUrl ? imgUrl : '';
       this.potImg = potImg ? potImg : '';
       this.bannerImg = bannerImg ? bannerImg : ''; 
-      this.fee = fee;
-      this.pot = pot;
+      this.fee = fee ? fee : {};
+      this.pot = pot ? pot : {};
       this.minFees = minFees;
       this.title = title ? title : [];
       this.rewards = [new RewardModel()];
