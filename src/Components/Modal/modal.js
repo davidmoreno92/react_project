@@ -1,6 +1,5 @@
-import React, { Component, useState } from 'react';
+import React from 'react';
 import ModalBS from "react-bootstrap/Modal";
-import { Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default class Modal extends React.Component {

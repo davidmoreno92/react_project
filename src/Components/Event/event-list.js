@@ -71,9 +71,11 @@ class EventList extends React.Component {
                         <tr key={index}>
                             <td>{event.title &&
                                 event.title.map((eventTitle, index) => {
-                                    if (eventTitle.lang === 'es')
-                                        return <p key={index}>{eventTitle.name}</p>
-                                })
+                                    if (eventTitle.lang === 'es') {
+                                        return <span key={index}>{eventTitle.name}</span>
+                                    }
+                                    return false;
+                                    })
                             }
                             </td>
                             <td><Moment format="DD/MM/YYYY hh:mm:ss">{parseInt(event.start)}</Moment></td>

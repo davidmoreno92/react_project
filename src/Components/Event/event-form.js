@@ -3,12 +3,13 @@ import moment from 'moment';
 import DatePicker, { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 import Select from 'react-select'
-
-import "react-datepicker/dist/react-datepicker.css";
+import { Redirect } from 'react-router-dom'
 import { Form, InputGroup, FormControl, Button } from 'react-bootstrap';
 import { Gift, X, PlusSquareFill } from 'react-bootstrap-icons';
+
+import "react-datepicker/dist/react-datepicker.css";
 import './event-form.scss'
-import EventsService, { IMAGES_TOURS_BUCKET} from "../../Services/event-service";
+import EventsService, { IMAGES_TOURS_BUCKET } from "../../Services/event-service";
 import GamesService from "../../Services/games-service";
 import EventModel from '../../Models/Event';
 import RewardModel from '../../Models/Reward';
@@ -37,46 +38,38 @@ class EventForm extends React.Component {
         eventInfoForm.id = this.state.eventInfo.id;
         eventInfoForm.date = this.state.eventInfo.date;
         eventInfoForm.created = this.state.eventInfo.created;
-        eventInfoForm.updated = this.state.eventInfo.updated ? this.state.eventInfo.updated : Date.now();
-        eventInfoForm.start = this.state.eventInfo.start ? this.state.eventInfo.start : Date.now();
-        eventInfoForm.end = this.state.eventInfo.end ? this.state.eventInfo.end : Date.now();
-        eventInfoForm.dateShowable = this.state.eventInfo.dateShowable ? this.state.eventInfo.dateShowable : eventInfoForm.start;
-        eventInfoForm.subType = this.state.eventInfo.subType ? this.state.eventInfo.subType : '';
+        eventInfoForm.title = this.state.eventInfo.title;
+        eventInfoForm.updated = this.state.eventInfo.updated;
+        eventInfoForm.start = this.state.eventInfo.start;
+        eventInfoForm.end = this.state.eventInfo.end;
         eventInfoForm.token = this.state.eventInfo.token;
-        eventInfoForm.topicId = this.state.eventInfo.topicId ? this.state.eventInfo.topicId : '';
-        eventInfoForm.imgUrl = this.state.eventInfo.imgUrl ? this.state.eventInfo.imgUrl : '';
-        eventInfoForm.title = this.state.eventInfo.title ? this.state.eventInfo.title : [];
-        eventInfoForm.title[0] = eventInfoForm.title[0] ? eventInfoForm.title[0] : { lang: 'en', name: '' };
-        eventInfoForm.title[1] = eventInfoForm.title[1] ? eventInfoForm.title[1] : { lang: 'es', name: '' };
         eventInfoForm.gameId = this.state.eventInfo.gameId;
-        eventInfoForm.code = this.state.eventInfo.code ? this.state.eventInfo.code : '';
-        eventInfoForm.minFees = this.state.eventInfo.minFees ? this.state.eventInfo.minFees : '';
-        eventInfoForm.rewards = this.state.eventInfo.rewards ? this.state.eventInfo.rewards : [];
-        eventInfoForm.fee = this.state.eventInfo.fee ? this.state.eventInfo.fee : {};
-        eventInfoForm.pot = this.state.eventInfo.pot ? this.state.eventInfo.pot : {};
-        /*         eventInfoForm.fee.amount = this.state.eventInfo.fee.amount ? this.state.eventInfo.fee.amount : '';
-                eventInfoForm.fee.type = this.state.eventInfo.fee.type ? this.state.eventInfo.fee.type : '';
-                eventInfoForm.fee.currency = this.state.eventInfo.fee.curency ? this.state.eventInfo.fee.curency : '';
-                eventInfoForm.pot.amount = this.state.eventInfo.pot.amount ? this.state.eventInfo.pot.amount : '';
-                eventInfoForm.pot.currency = this.state.eventInfo.pot.currency ? this.state.eventInfo.pot.currency : '';
-                eventInfoForm.pot.type = this.state.eventInfoForm.pot.type ? this.state.eventInfoForm.pot.type : '';  */
-        //TODO: Implement files in API
-        eventInfoForm.files = this.state.eventInfo.files ? this.state.eventInfo.files : {};
-        eventInfoForm.files.rewardImg = {};
-        eventInfoForm.files.bannerImg = {};
-        eventInfoForm.files.potImg = {};
 
+        eventInfoForm.dateShowable = this.state.eventInfo.dateShowable ? this.state.eventInfo.dateShowable : eventInfoForm.start;
+        eventInfoForm.subType = this.state.eventInfo.subType ? this.state.eventInfo.subType : new EventModel().subType;
+        eventInfoForm.topicId = this.state.eventInfo.topicId ? this.state.eventInfo.topicId : new EventModel().topicId;
+        eventInfoForm.code = this.state.eventInfo.code ? this.state.eventInfo.code : new EventModel().code;
+        eventInfoForm.minFees = this.state.eventInfo.minFees ? this.state.eventInfo.minFees : 0;
+        eventInfoForm.maxPlayers = this.state.eventInfo.maxPlayers ? this.state.eventInfo.maxPlayers : 0;
+        eventInfoForm.rewards = this.state.eventInfo.rewards ? this.state.eventInfo.rewards : new EventModel().rewards;
+        eventInfoForm.fee = this.state.eventInfo.fee ? this.state.eventInfo.fee : new EventModel().fee;
+        eventInfoForm.fee.amount = this.state.eventInfo.fee.amount ? this.state.eventInfo.fee.amount : 0;
+        eventInfoForm.pot = this.state.eventInfo.pot ? this.state.eventInfo.pot : new EventModel().pot;
+        eventInfoForm.pot.amount = this.state.eventInfo.pot.amount ? this.state.eventInfo.pot.amount : 0;
 
+        eventInfoForm.files = new EventModel().files;
+        eventInfoForm.files.bannerImage.url = this.state.eventInfo.imgUrl;
+        eventInfoForm.files.potImage.url = this.state.eventInfo.pot.imgUrl;
+        eventInfoForm.files.rewardImage.url = this.state.eventInfo.rewards.imgUrl;
+        
         eventInfoForm.isNew = this.state.eventInfo.isNew ? this.state.eventInfo.isNew : false;
 
-        console.log('eventInfoForm', eventInfoForm);
-        this.setState({ eventInfoLocal: eventInfoForm })
+        this.setState({ eventInfoLocal: eventInfoForm });
     }
 
     handleChanges = (param, e) => {
         const { name, value } = e.target;
         const eventInfo = this.state.eventInfoLocal;
-        console.log(name, param);
         if (name === 'title') {
             let languageData = eventInfo.title.findIndex(obj => obj.lang === param);
             eventInfo[name][languageData].name = value;
@@ -93,11 +86,13 @@ class EventForm extends React.Component {
         const { name } = e.target;
 
         if (e.target.files && e.target.files.length) {
-            newData[name] = e.target.files[0].name;
-            newData['files'][name] = e.target.files[0];
+            newData.files[name].url= e.target.files[0].name;
+            newData.files[name].dataObject = e.target.files[0];
+
+            console.log(newData.files[name]);
         }
 
-        console.log(e.target.files[0]);
+        console.log(newData);
         this.setState({ eventInfoLocal: newData });
     };
 
@@ -118,8 +113,8 @@ class EventForm extends React.Component {
         const { name, value } = e.target;
 
         if (e.target.files && e.target.files.length) {
-            newData.rewards[i]['fileObject'] = e.target.files[0];
-            newData.rewards[i][name] = e.target.files[0].name;
+            newData.rewards[i]['dataObject'] = e.target.files[0];
+            newData.rewards[i]['imgUrl'] = e.target.files[0].name;
         }
         else {
             newData.rewards[i][name] = value;
@@ -143,58 +138,23 @@ class EventForm extends React.Component {
         newData.rewards.splice(i, 1);
         this.setState({ eventInfoLocal: newData });
     };
-
+    
     createEvent = (e) => {
+        console.log(this.state.eventInfoLocal);
         try {
             this.form.current.reportValidity();
-            this.state.gamesSelected.forEach(game => {
+            this.state.gamesSelected.forEach(async game => {
                 let gameId = game.value;
                 let eventToAdd = { ...this.state.eventInfoLocal };
-
-                var formData = new FormData();
-                
-                if (eventToAdd) {
-                    eventToAdd.fee.amount = eventToAdd.fee.type !== 'free' ? parseInt(eventToAdd.fee.amount) : 0;
-                    eventToAdd.pot.amount = parseInt(eventToAdd.pot.amount);
-                    eventToAdd.pot.type = 'R'; //Siempre es R por que no se utiliza este tipo para nada
-                    eventToAdd.pot.currency = eventToAdd.pot.type === 'R' ? 'EUR' : 'GG';
-                    eventToAdd.fee.currency = eventToAdd.fee.type === 'R' ? 'EUR' : eventToAdd.fee.type === 'R' && eventToAdd.fee.amount === 0 ? 'EUR' : 'GG'
-                    eventToAdd.rewards.forEach(reward => {
-                        parseInt(reward.amount);
-                        parseInt(reward.position);
-                        reward.currency = reward.type === 'R' ? 'EUR' : 'GG'
+                EventsService.createEvent(eventToAdd, gameId)
+                    .then((response) => {
+                        this.setState({ createResponse: response.data, createSubmitted: true });
+                    })
+                    .catch((e) => {
+                        this.setState({ createResponse: e, createSubmitted: true });
+                        console.log(e);
                     });
 
-                    const fileReader = new FileReader();
-                    fileReader.readAsText(this.selectedFile, "UTF-8");
-                    fileReader.onload = () => {
-                        eventToAdd.files.bannerImg = JSON.parse(eventToAdd.files.bannerImg);
-                        eventToAdd.files.potImg = JSON.parse(eventToAdd.files.potImg);
-                        eventToAdd.files.rewardImg = JSON.parse(eventToAdd.files.rewardImg);
-                        formData.append('files', eventToAdd.files);
-                    }
-
-                    formData.append('gameId', gameId);
-                    formData.append('start', parseInt(eventToAdd.start));
-                    formData.append('end', parseInt(eventToAdd.end));
-                    formData.append('dateShowable', parseInt(eventToAdd.dateShowable));
-                    formData.append('minFees', parseInt(eventToAdd.minFees));
-                    formData.append('minFees', parseInt(eventToAdd.minFees));
-                    formData.append('fee', eventToAdd.fee);
-                    formData.append('pot', eventToAdd.pot);
-                    formData.append('rewards', eventToAdd.rewards);
-
-                    console.log('Evento a añadir', eventToAdd);
-                    EventsService.createEvent(eventToAdd)
-                        .then((response) => {
-                            this.setState({ createResponse: response.data, createSubmitted: true });
-                            console.log(response.data);
-                        })
-                        .catch((e) => {
-                            this.setState({ createResponse: e, createSubmitted: true });
-                            console.log(e);
-                        });
-                }
             });
         } catch (err) {
             this.setState({ error: err });
@@ -202,16 +162,21 @@ class EventForm extends React.Component {
     }
 
     render() {
-        console.log(this.state.eventInfoLocal);
         const selectStyles = { menu: styles => ({ ...styles, zIndex: 999 }) };
         return (
             <div className="px-lg-5 py-3">
                 {this.state.error ?
-                    <div class="text-danger col-12">
-                        Se ha producido un error en el envio del formulario.
+                    <div class="alert alert-danger" role="alert">
+                        Se ha producido un la creación del evento.
                     </div>
-                    : undefined}
-                <fieldset disabled={!this.props.isEditable}>
+                    : 
+                this.state.createSubmitted ?
+                    <div class="alert alert-success col-12" role="alert">
+                        Evento creado correctamente!
+                    </div>
+                    : undefined
+                }
+                <fieldset disabled={!this.props.isEditable || this.state.createSubmitted}>
                     {this.state.eventInfoLocal ?
                         <Form ref={this.form}>
                             <div className="left col-12 col-lg-6 pr-4 float-left">
@@ -241,7 +206,7 @@ class EventForm extends React.Component {
                                 </div>
                                 <div className="row">
                                     {!(this.state.eventInfoLocal.dateShowable <= this.state.eventInfoLocal.start) ?
-                                        <div class="text-danger col-12">
+                                        <div className="text-danger col-12">
                                             La fecha de visualización debe ser igual o inferior a la fecha de inicio.
                                         </div>
                                         : undefined}
@@ -301,14 +266,16 @@ class EventForm extends React.Component {
                                         <Form.Label>Reward</Form.Label>
                                         <InputGroup className="mb-3 images-border">
                                             <div className="col-12 p-2">
-                                                {this.state.eventInfoLocal.files.rewardImg && this.state.eventInfoLocal.files.rewardImg.name ?
-                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.rewardImg)} alt="reward"></img>
+                                                {this.state.eventInfoLocal.files && this.state.eventInfoLocal.files.rewardImage && this.state.eventInfoLocal.files.rewardImage.url ?
+                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.rewardImage.dataObject)} alt="reward"></img>
                                                     : this.state.eventInfoLocal.reward && this.state.eventInfoLocal.reward.imgUrl ?
-                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET+'/'+this.state.eventInfoLocal.reward.imgUrl} alt="reward"/>
-                                                        : ''
+                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET + '/' + this.state.eventInfoLocal.reward.imgUrl} alt="reward" />
+                                                        : undefined
                                                 }
-                                                <FormControl id="rewardGlobalImg" accept="image/jpg, image/jpeg, image/png" type="file" name="rewardImg" onChange={this.handleImagesGlobal} />
-                                                <span className="uploadLabel">{this.state.eventInfoLocal.files.rewardImg.name}</span>
+                                                <FormControl id="rewardGlobalImg" accept="image/jpg, image/jpeg, image/png" type="file" name="rewardImage" onChange={this.handleImagesGlobal} />
+                                                {this.state.eventInfoLocal.files && this.state.eventInfoLocal.files.rewardImage && this.state.eventInfoLocal.files.rewardImage.url ?
+                                                    <span className="uploadLabel">{this.state.eventInfoLocal.files.rewardImage.url}</span>
+                                                : undefined }
                                             </div>
                                         </InputGroup>
                                     </Form.Group>
@@ -316,15 +283,17 @@ class EventForm extends React.Component {
                                         <Form.Label className="pl-lg-2">Pot</Form.Label>
                                         <InputGroup className="images-border">
                                             <div className="p-2">
-                                                {this.state.eventInfoLocal.files.potImg && this.state.eventInfoLocal.files.potImg.name ?
-                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.potImg)} alt="pot"></img>
+                                                {this.state.eventInfoLocal.files && this.state.eventInfoLocal.files.potImage && this.state.eventInfoLocal.files.potImage.url ?
+                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.potImage.dataObject)} alt="pot"></img>
                                                     : this.state.eventInfoLocal.pot && this.state.eventInfoLocal.pot.imgUrl ?
-                                                    //Route to s3 in SRC
-                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET+'/'+this.state.eventInfoLocal.pot.imgUrl} alt="pot"/>
-                                                        : ''
+                                                        //Route to s3 in SRC
+                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET + '/' + this.state.eventInfoLocal.pot.imgUrl} alt="pot" />
+                                                        : undefined
                                                 }
-                                                <FormControl id="rewardPotImg" accept="image/jpg, image/jpeg, image/png" type="file" name="potImg" onChange={this.handleImagesGlobal} />
-                                                <span className="uploadLabel">{this.state.eventInfoLocal.potImg}</span>
+                                                <FormControl id="rewardPotImg" accept="image/jpg, image/jpeg, image/png" type="file" name="potImage" onChange={this.handleImagesGlobal} />
+                                                {this.state.eventInfoLocal.files && this.state.eventInfoLocal.files.potImage && this.state.eventInfoLocal.files.potImage.url ?
+                                                    <span className="uploadLabel">{this.state.eventInfoLocal.files.potImage.url}</span>
+                                                : undefined }
                                             </div>
                                         </InputGroup>
                                     </Form.Group>
@@ -332,15 +301,16 @@ class EventForm extends React.Component {
                                         <Form.Label>Banner</Form.Label>
                                         <InputGroup className="images-border">
                                             <div className="p-2">
-                                                {this.state.eventInfoLocal.files.bannerImg.name}
-                                                {this.state.eventInfoLocal.files.bannerImg && this.state.eventInfoLocal.files.bannerImg.name ?
-                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.bannerImg)} alt="banner"></img>
+                                                {this.state.eventInfoLocal.files && this.state.eventInfoLocal.files.bannerImage && this.state.eventInfoLocal.files.bannerImage.url ?
+                                                    <img className="pb-2 mw-100" src={URL.createObjectURL(this.state.eventInfoLocal.files.bannerImage.dataObject)} alt="banner"></img>
                                                     : this.state.eventInfoLocal.imgUrl ?
-                                                        <img className="pb-2 mw-100"src={IMAGES_TOURS_BUCKET+'/'+this.state.eventInfoLocal.imgUrl} alt="banner"/>
-                                                        : ''
+                                                        <img className="pb-2 mw-100" src={IMAGES_TOURS_BUCKET + '/' + this.state.eventInfoLocal.imgUrl} alt="banner" />
+                                                        : undefined
                                                 }
-                                                <FormControl id="rewardBannerImg" accept="image/jpg, image/jpeg, image/png" type="file" name="bannerImg" onChange={this.handleImagesGlobal} />
-                                                <span className="uploadLabel">{this.state.eventInfoLocal.files.bannerImg.name}</span>
+                                                <FormControl id="rewardBannerImg" accept="image/jpg, image/jpeg, image/png" type="file" name="bannerImage" onChange={this.handleImagesGlobal} />
+                                                {this.state.eventInfoLocal.files && this.state.eventInfoLocal.files.bannerImage && this.state.eventInfoLocal.files.bannerImage.url ?
+                                                    <span className="uploadLabel">{this.state.eventInfoLocal.files.bannerImage.url}</span>
+                                                : undefined }
                                             </div>
                                         </InputGroup>
                                     </Form.Group>
@@ -359,6 +329,12 @@ class EventForm extends React.Component {
                                     <Form.Label>Nº de entradas mínimo *</Form.Label>
                                     <InputGroup className="mb-3">
                                         <FormControl type="number" required value={this.state.eventInfoLocal.minFees} name="minFees" onChange={this.handleChanges.bind(this, undefined)} />
+                                    </InputGroup>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Nº de entradas máximo *</Form.Label>
+                                    <InputGroup className="mb-3">
+                                        <FormControl type="number" value={this.state.eventInfoLocal.maxPlayers} name="maxPlayers" onChange={this.handleChanges.bind(this, undefined)} />
                                     </InputGroup>
                                 </Form.Group>
                                 <Form.Group>

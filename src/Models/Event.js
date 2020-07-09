@@ -1,48 +1,49 @@
 import { v4 as uuid } from 'uuid';
 import randomstring from 'randomstring';
-import RewardModel from './Reward';
 
 class EventModel {
-    constructor(id, created, updated, dateShowable, state, date, token, potType, gameId, potImg, bannerImg, subType, topicId, backgroundImage, imgUrl, start, end, fee, pot, minFees, title, code, rules, type, tz, url) {
-      this._curPlayers = 0;
-      this._guaranty = 0;
-      this._priv = false;
-      this._live = true; 
-      this._logo = 2;
-      this._tz = 'Europe/Madrid';
-      this._url = 'https://www.egogames.com/games.html'
+  constructor() {
+    this.curPlayers = 0;
+    this.guaranty = 0;
+    this.priv = false;
+    this.live = true;
+    this.logo = 2;
+    this.tz = 'Europe/Madrid';
+    this.url = 'https://www.egogames.com/games.html'
 
-      this.state = state ? state : 'C';  //'C' Created, 'E' Ended  TO ADD: 'H'
-      this.date = date ? date : Date.now();
-      this.token = token ? token : randomstring.generate();
-      this.created = created ? created : Date.now();
-      this.updated = updated ? updated : Date.now();
-      this.start = start ? start : Date.now();
-      this.end = end ? end : Date.now();
-      this.dateShowable = dateShowable ? dateShowable : this.start;
-      this.id = id ? id : uuid();
-      this.potType = potType;
-      this.gameId = gameId;
-      this.subType = subType;
-      this.topicId = topicId;
-      this.backgroundImage = backgroundImage;
-      this.files = {};
-      //Delete IMGS outside files
-      this.imgUrl = imgUrl ? imgUrl : '';
-      this.potImg = potImg ? potImg : '';
-      this.bannerImg = bannerImg ? bannerImg : ''; 
-      this.fee = fee ? fee : {};
-      this.pot = pot ? pot : {};
-      this.minFees = minFees;
-      this.title = title ? title : [];
-      this.rewards = [new RewardModel()];
-      this.code = code;
-      this.rules = rules;
-      this.type = type;
-      this.tz = tz;
-      this.url = url;
-      this.isNew = true;
-    }
+    this.state = 'C';  //'C' Created, 'E' Ended  TO ADD: 'H'
+    this.date = Date.now();
+    this.token = randomstring.generate();
+    this.created = Date.now();
+    this.updated = Date.now();
+    this.start = Date.now();
+    this.end = Date.now();
+    this.dateShowable = this.start;
+    this.id = uuid();
+    this.gameId = '';
+    this.subType = '';
+    this.topicId = '';
+/*  this.files = {};
+    this.imgUrl = '';
+    this.potImg = '';
+    this.bannerImg = ''; */
+    this.files = {};
+    this.files.bannerImage = { base64: '', url: '', dataObject: {}};
+    this.files.potImage = { base64: '', url: '', dataObject: {}};
+    this.files.rewardImage ={ base64: '', url: '', dataObject: {}};
+    this.fee = { amount: 0 };
+    this.pot = { amount: 0 };
+    this.minFees = '';
+    this.maxPlayers = '';
+    this.title =  [];
+    this.title[0] = { lang: 'en', name: '' };
+    this.title[1] = { lang: 'es', name: '' };
+    this.rewards = [];
+    this.code = '';
+    this.rules = [];
+    this.type = '';
+    this.isNew = true;
   }
+}
 
 export default EventModel;
